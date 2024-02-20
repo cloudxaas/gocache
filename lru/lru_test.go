@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"testing"
 )
-
 func BenchmarkLRUCache_Put(b *testing.B) {
 	cache := NewLRUCache(10000) // Assuming a cache size of 10000 for the benchmark
 	testData := make([][]byte, b.N)
@@ -14,10 +13,11 @@ func BenchmarkLRUCache_Put(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		cache.Put(testData[i], testData[i])
+		// Convert []byte to string before using as a key
+		key := string(testData[i])
+		cache.Put(key, testData[i])
 	}
 }
-
 func BenchmarkLRUCache_Get(b *testing.B) {
 	cache := NewLRUCache(10000) // Pre-fill the cache to avoid misses
 	testData := make([][]byte, b.N)
