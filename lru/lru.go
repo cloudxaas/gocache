@@ -1,4 +1,4 @@
-package lru
+package cxcachelru
 
 import (
 	"container/list"
