@@ -12,7 +12,7 @@ if you have roughly (you think) 1 mil items (capacity), you can set eviction cou
 - **Concurrency Safe**: Implements synchronization to manage concurrent access, making it suitable for high-concurrency scenarios.
 
 ## Motivation
-Most lru cache available online for golang are set by capacity count, which means you may OOM your program. With this lru, once you set the memory size limit, you do not need to worry about OOM issues. OOM = Out of memory.
+Most lru cache available online for golang are set by capacity count, which means you may OOM your program. With this lru, once you set the memory size limit, you do not need to worry about OOM or garbage collection issues with zero allocation. OOM = Out of memory.
 
 ## Benchmarks
 
