@@ -40,6 +40,7 @@ ok  	github.com/cloudxaas/gocache/lru/bytes	18.230s
 ```
 reference : https://github.com/phuslu/lru
 
+
 These benchmarks illustrate the efficiency and speed of the cache, which is designed to operate with zero memory allocations during runtime operations, contributing to its high performance.
 
 ## Usage
@@ -100,3 +101,7 @@ func main() {
     cache.Delete([]byte("key1"))
 }
 ```
+
+# Caveats / Limitations
+It generates 2 bytes / alloc for prolonged put, delete. (working to resolve this). the req/s will be slower after prolong use.
+
