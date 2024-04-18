@@ -1,3 +1,5 @@
-please check lru/bytes folder etc.
+**cxlrubytes** - Fastest Zero Allocation LRU Cache in golang (for key, value pairs in []byte)
+check [github.com/cloudxaas/gocache ](https://github.com/cloudxaas/gocache/tree/main/lru/bytes)
+Supposingly having the best cache hit ratio (in zero allocation class) with best memory used.
 
-will be updating with more different cache types
+Please contribute to make it better.
