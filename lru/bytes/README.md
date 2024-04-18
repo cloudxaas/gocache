@@ -4,6 +4,8 @@ Welcome to the repository for the fastest LRU cache implementations available fo
 
 This is work-in-progress, looking for contributors.
 
+(not for production use, look at caveats)
+
 ## Features
 
 - **Memory-Size Limited**: Unlike other LRU caches that limit the number of entries, this cache controls the total memory used, allowing for better resource management in memory-constrained environments.
