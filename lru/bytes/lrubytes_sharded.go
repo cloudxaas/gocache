@@ -10,12 +10,12 @@ type ShardedCache struct {
     shardCount uint8
 }
 
-// NewShardedCache creates a new ShardedCache with the specified number of shards and total memory limit
-func NewShardedCache(shardCount uint8, totalMemory int64) *ShardedCache {
+// NewShardedCache creates a new ShardedCache with the specified number of shards, total memory limit, and eviction count
+func NewShardedCache(shardCount uint8, totalMemory int64, evictionCount int) *ShardedCache {
     maxMemoryPerShard := totalMemory / int64(shardCount) // Calculate memory per shard
     shards := make([]*Cache, shardCount)
     for i := uint8(0); i < shardCount; i++ {
-        shards[i] = NewLRUCache(maxMemoryPerShard)
+        shards[i] = NewLRUCache(maxMemoryPerShard, evictionCount) // Now passes evictionCount to each shard
     }
     return &ShardedCache{
         shards:     shards,
