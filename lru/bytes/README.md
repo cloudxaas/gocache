@@ -4,7 +4,7 @@ Welcome to the repository for the fastest LRU cache implementations available fo
 
 This is work-in-progress, looking for contributors.
 
-(not for production use, look at caveats)
+(look at caveats)
 
 ## Features
 
