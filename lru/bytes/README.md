@@ -106,7 +106,7 @@ func main() {
 ```
 
 # Caveats / Limitations
-(too few memory initialization will result in super slow? not sure. shouldnt do that. should use a lot of memory)
-basically there could be edge case as this is done in a hurry on April 18th with minimal test.
+1. You need to set the eviction count parameter according to usage pattern
+2. Nasically there could be edge case as this is done in a hurry on April 18th with minimal test.
 
 Contributors welcome.
