@@ -22,17 +22,21 @@ goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lru/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkPut-12                      	81288486	        14.94 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGet-12                      	82522304	        14.08 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDelete-12                   	297565029	         3.985 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPutParallel-12              	22839345	        50.89 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGetParallel-12              	23597145	        48.91 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDeleteParallel-12           	34842375	        29.40 ns/op	       0 B/op	       0 allocs/op
-BenchmarkShardedPutParallel-12       	48219897	        25.04 ns/op	       0 B/op	       0 allocs/op
-BenchmarkShardedGetParallel-12       	50427998	        23.82 ns/op	       0 B/op	       0 allocs/op
-BenchmarkShardedDeleteParallel-12    	169913770	         6.918 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUPut-12             	60035966	        17.91 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUGet-12             	70038372	        16.98 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUDelete-12          	122154745	         9.735 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut-12                      	79242625	        15.46 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet-12                      	81756193	        14.35 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete-12                   	290940819	         4.116 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPutParallel-12              	22028478	        49.44 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetParallel-12              	23141043	        46.35 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDeleteParallel-12           	38440218	        27.76 ns/op	       0 B/op	       0 allocs/op
+BenchmarkShardedPutParallel-12       	44919225	        24.89 ns/op	       0 B/op	       0 allocs/op
+BenchmarkShardedGetParallel-12       	45716688	        24.26 ns/op	       0 B/op	       0 allocs/op
+BenchmarkShardedDeleteParallel-12    	180548754	         6.693 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	github.com/cloudxaas/gocache/lru/bytes	14.902s
+ok  	github.com/cloudxaas/gocache/lru/bytes	18.230s
+
 ```
 
 These benchmarks illustrate the efficiency and speed of the cache, which is designed to operate with zero memory allocations during runtime operations, contributing to its high performance.
