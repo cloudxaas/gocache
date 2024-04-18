@@ -59,7 +59,7 @@ import (
 
 func main() {
     // Initialize a new LRU cache with a max memory limit of 10 MB
-    cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024)
+    cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024, 1024)
 
     // Example of adding a value to the cache
     cache.Put([]byte("key1"), []byte("value1"))
