@@ -152,3 +152,10 @@ func (c *Cache) moveToFront(idx int) {
     }
     c.head = idx
 }
+
+// CurrentMemory returns the current memory usage of the cache.
+func (c *Cache) CurrentMemory() int64 {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    return c.currentMemory
+}
