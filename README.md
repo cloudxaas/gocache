@@ -1,4 +1,4 @@
-# Fastest Zero Allocation LRU Cache in golang (WIP) 
+# Fastest Zero Allocation LRU Cache in golang 
 (for key, value pairs in []byte)
 
 ## cxlrubytes
