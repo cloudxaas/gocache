@@ -3,7 +3,7 @@
 
 ## cxlrubytes
 
-Supposingly having the best cache hit ratio (in zero allocation class) with best memory used.
+Supposingly having the best cache hit ratio (in zero allocation class) with "optimum" memory usage.
 
 Please contribute to make it better.
 Feedback / comments / suggestions on improvement appreciated (stars too).
