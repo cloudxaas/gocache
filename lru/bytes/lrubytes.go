@@ -27,12 +27,13 @@ import (
 )
 
 type Cache struct {
-    maxMemory   int64
-    currentMemory int64
-    entries    []entry
-    indexMap   map[string]int
-    head, tail int
-    mu         sync.Mutex
+    maxMemory       int64
+    currentMemory   int64
+    evictBatchSize  int    // Store the number of items to evict at once
+    entries         []entry
+    indexMap        map[string]int
+    head, tail      int
+    mu              sync.Mutex
 }
 
 type entry struct {
@@ -40,13 +41,15 @@ type entry struct {
     prev, next int
 }
 
-func NewLRUCache(maxMemory int64) *Cache {
+// NewLRUCache now accepts an additional parameter for batch eviction size
+func NewLRUCache(maxMemory int64, evictBatchSize int) *Cache {
     return &Cache{
-        maxMemory: maxMemory,
-        entries:   make([]entry, 0),  // Dynamic resizing based on memory usage
-        indexMap:  make(map[string]int),
-        head:      -1,
-        tail:      -1,
+        maxMemory:      maxMemory,
+        evictBatchSize: evictBatchSize, // Initialize evictBatchSize
+        entries:        make([]entry, 0),
+        indexMap:       make(map[string]int),
+        head:           -1,
+        tail:           -1,
     }
 }
 
@@ -74,7 +77,7 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 
 func (c *Cache) Put(key, value []byte) {
     c.mu.Lock()
-    keyStr := cx.B2s(key)  
+    keyStr := cx.B2s(key)
     memSize := c.estimateMemory(key, value)
 
     if idx, ok := c.indexMap[keyStr]; ok {
@@ -86,14 +89,12 @@ func (c *Cache) Put(key, value []byte) {
         return
     }
 
-    if c.currentMemory+memSize > c.maxMemory {
-        // Evict least recently used items until there is enough space
-        for c.currentMemory+memSize > c.maxMemory {
+    if c.currentMemory + memSize > c.maxMemory {
+        for c.currentMemory + memSize > c.maxMemory {
             c.evict()
         }
     }
 
-    // Add new entry
     c.entries = append(c.entries, entry{key: key, value: value})
     idx := len(c.entries) - 1
     c.indexMap[keyStr] = idx
@@ -115,7 +116,7 @@ func (c *Cache) Delete(key []byte) {
 }
 
 func (c *Cache) evict() {
-    if c.tail != -1 {
+    for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
         oldKeyStr := string(c.entries[c.tail].key)
         memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
         c.adjustMemory(-memSize)
@@ -144,7 +145,6 @@ func (c *Cache) moveToFront(idx int) {
         return
     }
     c.detach(idx)
-    // Attach to front
     c.entries[idx].prev = -1
     c.entries[idx].next = c.head
     if c.head != -1 {
