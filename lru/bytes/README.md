@@ -107,6 +107,6 @@ func main() {
 
 # Caveats / Limitations
 1. You need to set the eviction count parameter according to usage pattern
-2. Nasically there could be edge case as this is done in a hurry on April 18th with minimal test.
+2. There could be edge case as this is done in a hurry on April 18th with minimal test BUT the parameter to set "correctly" is still the eviction count.
 
 Contributors welcome.
