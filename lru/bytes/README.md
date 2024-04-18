@@ -2,7 +2,8 @@
 
 Welcome to the repository for the fastest LRU cache implementations available for Go. This LRU cache is uniquely designed to limit the memory usage directly, rather than by the number of entries. This makes it ideal for applications where the memory footprint is critical, such as in embedded systems or high-performance computing environments where resources are tightly managed.
 
-(there could be edge case issues. but those are edge case)
+(adjust the limit of eviction count to match usage scenario)
+if you have roughly (you think) 1 mil items (capacity), you can set eviction count to 1024 or more. depending on usage patterns too. set the parameters accordingly.
 
 ## Features
 
