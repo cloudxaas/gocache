@@ -2,12 +2,11 @@ package lrubytes
 
 import (
     "testing"
-    "github.com/phuslu/lru"
 )
 
-func BenchmarkPut(b *testing.B) {
-    // Updated to include the eviction count of 512
-    cache := NewLRUCache(1024 * 1024 * 10, 512) // 10 MB max memory, evict 512 items at once
+func BenchmarkShardedPut(b *testing.B) {
+    // Updated to use ShardedCache with 16 shards, 10 MB total memory, and 512 eviction count
+    cache := NewShardedCache(16, 1024 * 1024 * 10, 512)
     keys := make([][]byte, 1000)
     values := make([][]byte, 1000)
     for i := 0; i < 1000; i++ {
@@ -20,9 +19,9 @@ func BenchmarkPut(b *testing.B) {
     }
 }
 
-func BenchmarkGet(b *testing.B) {
-    // Updated to include the eviction count of 512
-    cache := NewLRUCache(1024 * 1024 * 10, 512) // 10 MB max memory, evict 512 items at once
+func BenchmarkShardedGet(b *testing.B) {
+    // Updated to use ShardedCache
+    cache := NewShardedCache(16, 1024 * 1024 * 10, 512)
     for i := 0; i < 1000; i++ {
         cache.Put([]byte{byte(i)}, make([]byte, 1024)) // 1 KB values
     }
@@ -36,9 +35,9 @@ func BenchmarkGet(b *testing.B) {
     }
 }
 
-func BenchmarkDelete(b *testing.B) {
-    // Updated to include the eviction count of 512
-    cache := NewLRUCache(1024 * 1024 * 10, 512) // 10 MB max memory, evict 512 items at once
+func BenchmarkShardedDelete(b *testing.B) {
+    // Updated to use ShardedCache
+    cache := NewShardedCache(16, 1024 * 1024 * 10, 512)
     keys := make([][]byte, 1000)
     for i := 0; i < 1000; i++ {
         keys[i] = []byte{byte(i)}
@@ -51,9 +50,9 @@ func BenchmarkDelete(b *testing.B) {
     }
 }
 
-// Parallel benchmarks remain unchanged except the constructor
-func BenchmarkPutParallel(b *testing.B) {
-    cache := NewLRUCache(1024 * 1024 * 10, 512) // 10 MB max memory, evict 512 items at once
+// Parallel benchmarks for sharded cache
+func BenchmarkShardedPutParallel(b *testing.B) {
+    cache := NewShardedCache(16, 1024 * 1024 * 10, 512)
     keys := make([][]byte, 1000)
     values := make([][]byte, 1000)
     for i := 0; i < 1000; i++ {
@@ -69,8 +68,8 @@ func BenchmarkPutParallel(b *testing.B) {
     })
 }
 
-func BenchmarkGetParallel(b *testing.B) {
-    cache := NewLRUCache(1024 * 1024 * 10, 512) // 10 MB max memory, evict 512 items at once
+func BenchmarkShardedGetParallel(b *testing.B) {
+    cache := NewShardedCache(16, 1024 * 1024 * 10, 512)
     for i := 0; i < 1000; i++ {
         cache.Put([]byte{byte(i)}, make([]byte, 1024)) // 1 KB values
     }
@@ -88,8 +87,8 @@ func BenchmarkGetParallel(b *testing.B) {
     })
 }
 
-func BenchmarkDeleteParallel(b *testing.B) {
-    cache := NewLRUCache(1024 * 1024 * 10, 512) // 10 MB max memory, evict 512 items at once
+func BenchmarkShardedDeleteParallel(b *testing.B) {
+    cache := NewShardedCache(16, 1024 * 1024 * 10, 512)
     keys := make([][]byte, 1000)
     for i := 0; i < 1000; i++ {
         keys[i] = []byte{byte(i)}
