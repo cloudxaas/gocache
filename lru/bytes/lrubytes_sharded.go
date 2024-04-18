@@ -2,7 +2,6 @@ package lrubytes
 
 import (
     "github.com/zeebo/xxh3"
-    "sync"
 )
 
 // ShardedCache struct containing multiple Cache shards
