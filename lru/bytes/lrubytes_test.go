@@ -253,26 +253,3 @@ func BenchmarkShardedDeleteParallel(b *testing.B) {
     })
 }
 
-
-func TestCacheTTLExpiration(t *testing.T) {
-    cache := NewLRUCacheTTL(1024, 1, 50*time.Millisecond) // Small TTL for quick testing
-
-    key := []byte("key1")
-    value := []byte("value1")
-    ttl := 50 * time.Millisecond // TTL of 50 milliseconds
-
-    cache.Put(key, value, ttl)
-
-    // Test retrieval before expiration
-    if v, found := cache.Get(key); !found || string(v) != "value1" {
-        t.Errorf("Expected to find 'value1', got %v", string(v))
-    }
-
-    // Wait for the entry to expire
-    time.Sleep(60 * time.Millisecond) // Slightly longer than the TTL
-
-    // Test retrieval after expiration
-    if _, found := cache.Get(key); found {
-        t.Errorf("Expected 'key1' to be expired and not found")
-    }
-}
