@@ -2,6 +2,7 @@ package lrubytes
 
 import (
     "sync"
+    cx "github.com/cloudxaas/gocx"
 )
 
 type Cache struct {
@@ -38,7 +39,7 @@ func (c *Cache) adjustMemory(delta int64) {
 
 func (c *Cache) Get(key []byte) ([]byte, bool) {
     c.mu.Lock()
-    keyStr := string(key)
+    keyStr := cx.B2s(key)
     if idx, ok := c.indexMap[keyStr]; ok {
         if idx != c.head {
             c.moveToFront(idx)
@@ -52,7 +53,7 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 
 func (c *Cache) Put(key, value []byte) {
     c.mu.Lock()
-    keyStr := string(key)  
+    keyStr := cx.B2s(key)  
     memSize := c.estimateMemory(key, value)
 
     if idx, ok := c.indexMap[keyStr]; ok {
@@ -82,7 +83,7 @@ func (c *Cache) Put(key, value []byte) {
 
 func (c *Cache) Delete(key []byte) {
     c.mu.Lock()
-    keyStr := string(key)
+    keyStr := cx.B2s(key)
     if idx, ok := c.indexMap[keyStr]; ok {
         memSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
         c.adjustMemory(-memSize)
