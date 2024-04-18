@@ -1,7 +1,6 @@
 package lrubytes
 
 import (
-    "sync"
     "time"
     "github.com/cloudxaas/gocx"
 )
