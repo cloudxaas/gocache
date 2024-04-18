@@ -16,6 +16,7 @@ The cache has been rigorously benchmarked on a system with the following specifi
 - **CPU**: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics
 
 Benchmark results:
+```
 go test -bench=. -benchmem
 goos: linux
 goarch: amd64
@@ -32,6 +33,7 @@ BenchmarkShardedGetParallel-12       	50258973	        23.46 ns/op	       0 B/op
 BenchmarkShardedDeleteParallel-12    	166783006	         6.580 ns/op	       0 B/op	       0 allocs/op
 PASS
 ok  	github.com/cloudxaas/gocache/lru/bytes	14.711s
+```
 
 These benchmarks illustrate the efficiency and speed of the cache, which is designed to operate with zero memory allocations during runtime operations, contributing to its high performance.
 
