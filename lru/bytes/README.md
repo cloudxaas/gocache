@@ -47,7 +47,7 @@ These benchmarks illustrate the efficiency and speed of the cache, which is desi
 
 ## Usage
 
-To use this cache, include it in your Go project and create a cache instance specifying the maximum memory it should use:
+To use this cache, include it in your Go project and create a cache instance specifying the maximum memory it should use and the number of items to be evicted in a single go, which is faster than 1 by 1 eviction:
 
 ```go
 package main
@@ -91,7 +91,7 @@ func main() {
     // Initialize a new sharded LRU cache with a total memory limit of 10 MB across 16 shards
     shardCount := uint8(16)
     totalMemory := int64(10 * 1024 * 1024) // 10 MB total memory for the cache
-    cache := cxlrubytes.NewShardedCache(shardCount, totalMemory)
+    cache := cxlrubytes.NewShardedCache(shardCount, totalMemory, 1024)
 
     // Example of adding and retrieving values
     cache.Put([]byte("key1"), []byte("value1"))
