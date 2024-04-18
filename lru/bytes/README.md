@@ -59,7 +59,7 @@ import (
 )
 
 func main() {
-    // Initialize a new LRU cache with a max memory limit of 10 MB
+    // Initialize a new LRU cache with a max memory limit of 10 MB, with an eviction count of 1024 at one go
     cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024, 1024)
 
     // Example of adding a value to the cache
@@ -91,7 +91,7 @@ import (
 func main() {
     // Initialize a new sharded LRU cache with a total memory limit of 10 MB across 16 shards
     shardCount := uint8(16)
-    totalMemory := int64(10 * 1024 * 1024) // 10 MB total memory for the cache
+    totalMemory := int64(10 * 1024 * 1024) // 10 MB total memory for the cache, with an eviction count of 1024 at one go
     cache := cxlrubytes.NewShardedCache(shardCount, totalMemory, 1024)
 
     // Example of adding and retrieving values
