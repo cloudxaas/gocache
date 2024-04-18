@@ -72,6 +72,9 @@ func main() {
 
 
 ### Sharded version
+
+Theoretically should work better in high concurrency environment with multiple goroutines.
+Use this option when you have a lot of cpu cores.
 ```go
 package main
 
