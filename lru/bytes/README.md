@@ -1,4 +1,4 @@
-# Fastest Zero Allocation LRU Cache for Go key value in []byte 
+# cxlrubytes - Fastest Zero Allocation LRU Cache (for Go key value in []byte) 
 
 Welcome to the repository for the fastest LRU cache implementations available for Go. This LRU cache is uniquely designed to limit the memory usage directly, rather than just the number of entries. This makes it ideal for applications where the memory footprint is critical, such as in embedded systems or high-performance computing environments where resources are tightly managed.
 
