@@ -38,7 +38,7 @@ PASS
 ok  	github.com/cloudxaas/gocache/lru/bytes	18.230s
 
 ```
-reference : github.com/phuslu/lru
+reference : https://github.com/phuslu/lru
 
 These benchmarks illustrate the efficiency and speed of the cache, which is designed to operate with zero memory allocations during runtime operations, contributing to its high performance.
 
