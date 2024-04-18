@@ -2,9 +2,7 @@
 
 Welcome to the repository for the fastest LRU cache implementations available for Go. This LRU cache is uniquely designed to limit the memory usage directly, rather than by the number of entries. This makes it ideal for applications where the memory footprint is critical, such as in embedded systems or high-performance computing environments where resources are tightly managed.
 
-This is work-in-progress, looking for contributors.
-
-(look at caveats)
+(there could be edge case issues. but those are edge case)
 
 ## Features
 
@@ -107,5 +105,7 @@ func main() {
 ```
 
 # Caveats / Limitations
-It generates 2 bytes / alloc for prolonged put, delete. (working to resolve this). the req/s will be slower after prolong use.
+(too few memory initialization will result in super slow? not sure. shouldnt do that. should use a lot of memory)
+basically there could be edge case as this is done in a hurry on April 18th with minimal test.
 
+Contributors welcome.
