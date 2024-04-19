@@ -30,7 +30,7 @@ The cache has been rigorously benchmarked on a system with the following specifi
 - **Architecture**: AMD64
 - **CPU**: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics
 
-Benchmark results (100kb cache with 1024b key and value to force eviction etc.):
+Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
 ```
 go test -bench=. -benchmem -benchtime=5s
 goos: linux
