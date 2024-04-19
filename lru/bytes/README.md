@@ -29,24 +29,23 @@ goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lru/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkPhusluLRUPut-12                       	68711361	        18.17 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUGet-12                       	64436131	        16.21 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUDelete-12                    	135076806	         8.898 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesPut-12                      	78280653	        15.81 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGet-12                      	73011428	        14.69 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDelete-12                   	289866674	         4.072 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesPutParallel-12              	21824043	        50.08 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGetParallel-12              	21355274	        49.20 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDeleteParallel-12           	37476686	        28.71 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedPut-12               	53027437	        25.89 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGet-12               	49865094	        22.13 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDelete-12            	148508030	         7.935 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedPutParallel-12       	48309168	        25.65 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGetParallel-12       	49105214	        24.94 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDeleteParallel-12    	221644039	         5.556 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUPut-12                       	57649452	        18.44 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUGet-12                       	62122495	        17.14 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUDelete-12                    	132560532	         8.983 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesPut-12                      	63658322	        16.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGet-12                      	80221518	        15.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDelete-12                   	285668610	         4.169 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesPutParallel-12              	22497270	        51.55 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGetParallel-12              	22625414	        49.02 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDeleteParallel-12           	37217706	        31.36 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedPut-12               	45982656	        24.02 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGet-12               	54181010	        21.94 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDelete-12            	147515607	         8.111 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedPutParallel-12       	44052954	        25.41 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGetParallel-12       	46604583	        23.90 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDeleteParallel-12    	200875431	         5.566 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	github.com/cloudxaas/gocache/lru/bytes	25.457s
-
+ok  	github.com/cloudxaas/gocache/lru/bytes	23.294s
 ```
 reference : https://github.com/phuslu/lru
 
