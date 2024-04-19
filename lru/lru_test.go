@@ -1,6 +1,7 @@
 package cxcachelru
 
 import (
+    "sync"
     "testing"
 )
 
@@ -20,12 +21,15 @@ func TestLRUCache_Parallel(t *testing.T) {
     values := []IntSizer{10, 20, 30, 40, 50}
 
     t.Run("Parallel Put and Get", func(t *testing.T) {
-        t.RunParallel(func(pb *testing.PB) {
-            for pb.Next() {
-                // Test putting and getting items in the cache
-                for i, key := range keys {
+        t.Parallel()
+        var wg sync.WaitGroup
+        for i := 0; i < 100; i++ { // Launch 100 goroutines
+            wg.Add(1)
+            go func() {
+                defer wg.Done()
+                for j, key := range keys {
                     allocsPut := testing.AllocsPerRun(10, func() {
-                        cache.Put(key, values[i])
+                        cache.Put(key, values[j])
                     })
 
                     // Ensure there are no allocations during the Put operations
@@ -34,8 +38,8 @@ func TestLRUCache_Parallel(t *testing.T) {
                     }
 
                     value, found := cache.Get(key)
-                    if !found || value != values[i] {
-                        t.Errorf("Get(%v) = %v, want %v", key, value, values[i])
+                    if !found || value != values[j] {
+                        t.Errorf("Get(%v) = %v, want %v", key, value, values[j])
                     }
 
                     allocsGet := testing.AllocsPerRun(10, func() {
@@ -47,14 +51,18 @@ func TestLRUCache_Parallel(t *testing.T) {
                         t.Errorf("Get operation allocates %f times, want 0 allocations", allocsGet)
                     }
                 }
-            }
-        })
+            }()
+        }
+        wg.Wait()
     })
 
     t.Run("Parallel Delete", func(t *testing.T) {
-        t.RunParallel(func(pb *testing.PB) {
-            for pb.Next() {
-                // Test deleting items in the cache
+        t.Parallel()
+        var wg sync.WaitGroup
+        for i := 0; i < 100; i++ { // Launch 100 goroutines
+            wg.Add(1)
+            go func() {
+                defer wg.Done()
                 for _, key := range keys {
                     allocsDelete := testing.AllocsPerRun(10, func() {
                         cache.Delete(key)
@@ -70,7 +78,8 @@ func TestLRUCache_Parallel(t *testing.T) {
                         t.Errorf("Get(%v) after Delete should not find the item, but did", key)
                     }
                 }
-            }
-        })
+            }()
+        }
+        wg.Wait()
     })
 }
