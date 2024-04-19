@@ -9,9 +9,15 @@ type Sizer interface {
     Size() int64
 }
 
+// KeySizer is a constraint that requires the type to be comparable and implement the Sizer interface.
+type KeySizer interface {
+    Sizer
+    comparable
+}
+
 // Cache struct definition with generics.
-// K and V are the types for the key and value used in the cache. They must satisfy the Sizer interface.
-type Cache[K Sizer, V Sizer] struct {
+// K must satisfy the KeySizer interface, and V must satisfy the Sizer interface.
+type Cache[K KeySizer, V Sizer] struct {
     maxMemory       int64
     currentMemory   int64
     evictBatchSize  int
@@ -23,7 +29,7 @@ type Cache[K Sizer, V Sizer] struct {
 }
 
 // Entry holds a key, a value, and pointers to other entries in the LRU cache.
-type entry[K Sizer, V Sizer] struct {
+type entry[K KeySizer, V Sizer] struct {
     key   K
     value V
     prev  int
@@ -31,7 +37,7 @@ type entry[K Sizer, V Sizer] struct {
 }
 
 // NewLRUCache creates a new LRU Cache with specified max memory and eviction batch size.
-func NewLRUCache[K Sizer, V Sizer](maxMemory int64, evictBatchSize int) *Cache[K, V] {
+func NewLRUCache[K KeySizer, V Sizer](maxMemory int64, evictBatchSize int) *Cache[K, V] {
     return &Cache[K, V]{
         maxMemory:      maxMemory,
         evictBatchSize: evictBatchSize,
