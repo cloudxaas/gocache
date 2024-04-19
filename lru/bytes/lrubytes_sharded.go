@@ -1,6 +1,7 @@
 package lrubytes
 
 import (
+    "fmt"
     "github.com/zeebo/xxh3"
 )
 
