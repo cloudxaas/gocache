@@ -10,6 +10,7 @@ type Sizer interface {
 }
 
 // Cache struct definition with generics.
+// K and V are the types for the key and value used in the cache. They must satisfy the Sizer interface.
 type Cache[K comparable, V any] struct {
     maxMemory       int64
     currentMemory   int64
@@ -30,7 +31,7 @@ type entry[K comparable, V any] struct {
 }
 
 // NewLRUCache creates a new LRU Cache with specified max memory and eviction batch size.
-func NewLRUCache[K comparable, V any](maxMemory int64, evictBatchSize int) *Cache[K, V] {
+func NewLRUCache[K comparable, V Sizer](maxMemory int64, evictBatchSize int) *Cache[K, V] {
     return &Cache[K, V]{
         maxMemory:      maxMemory,
         evictBatchSize: evictBatchSize,
@@ -43,12 +44,12 @@ func NewLRUCache[K comparable, V any](maxMemory int64, evictBatchSize int) *Cach
 }
 
 // estimateMemory calculates the total memory usage for the key-value pair.
-func (c *Cache[K Sizer, V Sizer]) estimateMemory(key K, value V) int64 {
+func (c *Cache[K, V]) estimateMemory(key K, value V) int64 {
     return key.Size() + value.Size()
 }
 
 // Get retrieves the value for a key from the cache.
-func (c *Cache[K Sizer, V Sizer]) Get(key K) (V, bool) {
+func (c *Cache[K, V]) Get(key K) (V, bool) {
     c.mu.Lock()
     defer c.mu.Unlock()
 
@@ -63,7 +64,7 @@ func (c *Cache[K Sizer, V Sizer]) Get(key K) (V, bool) {
 }
 
 // Put adds a key-value pair to the cache, managing memory and evicting as necessary.
-func (c *Cache[K Sizer, V Sizer]) Put(key K, value V) {
+func (c *Cache[K, V]) Put(key K, value V) {
     c.mu.Lock()
     defer c.mu.Unlock()
 
@@ -96,7 +97,7 @@ func (c *Cache[K Sizer, V Sizer]) Put(key K, value V) {
 }
 
 // moveToFront updates the cache to move a given index to the front (most recently used).
-func (c *Cache[K Sizer, V Sizer]) moveToFront(idx int) {
+func (c *Cache[K, V]) moveToFront(idx int) {
     if idx == c.head {
         return
     }
@@ -119,7 +120,7 @@ func (c *Cache[K Sizer, V Sizer]) moveToFront(idx int) {
 }
 
 // Delete removes a key from the cache.
-func (c *Cache[K Sizer, V Sizer]) Delete(key K) {
+func (c *Cache[K, V]) Delete(key K) {
     c.mu.Lock()
     defer c.mu.Unlock()
 
@@ -132,7 +133,7 @@ func (c *Cache[K Sizer, V Sizer]) Delete(key K) {
 }
 
 // detach removes an entry from the linked list part of the cache.
-func (c *Cache[K Sizer, V Sizer]) detach(idx int) {
+func (c *Cache[K, V]) detach(idx int) {
     if c.entries[idx].prev != -1 {
         c.entries[c.entries[idx].prev].next = c.entries[idx].next
     } else {
@@ -151,7 +152,7 @@ func (c *Cache[K Sizer, V Sizer]) detach(idx int) {
 }
 
 // evict removes the least recently used items based on the eviction batch size.
-func (c *Cache[K Sizer, V Sizer]) evict() {
+func (c *Cache[K, V]) evict() {
     for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
         idx := c.tail
         c.adjustMemory(-c.estimateMemory(c.entries[idx].key, c.entries[idx].value))
@@ -161,6 +162,6 @@ func (c *Cache[K Sizer, V Sizer]) evict() {
 }
 
 // adjustMemory modifies the current memory tracking.
-func (c *Cache[K Sizer, V Sizer]) adjustMemory(delta int64) {
+func (c *Cache[K, V]) adjustMemory(delta int64) {
     c.currentMemory += delta
 }
