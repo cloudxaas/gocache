@@ -63,20 +63,22 @@ func (c *Cache) adjustMemory(delta int64) {
 
 func (c *Cache) Get(key []byte) ([]byte, bool) {
     c.mu.Lock()
+    defer c.mu.Unlock()
+    
     keyStr := cx.B2s(key)
     if idx, ok := c.indexMap[keyStr]; ok {
         if idx != c.head {
             c.moveToFront(idx)
         }
-        c.mu.Unlock()
         return c.entries[idx].value, true
     }
-    c.mu.Unlock()
     return nil, false
 }
 
 func (c *Cache) Put(key, value []byte) {
     c.mu.Lock()
+    defer c.mu.Unlock()
+
     keyStr := cx.B2s(key)
     memSize := c.estimateMemory(key, value)
 
@@ -85,7 +87,6 @@ func (c *Cache) Put(key, value []byte) {
         c.adjustMemory(memSize - oldMemSize)
         c.entries[idx].value = value
         c.moveToFront(idx)
-        c.mu.Unlock()
         return
     }
 
@@ -100,11 +101,12 @@ func (c *Cache) Put(key, value []byte) {
     c.indexMap[keyStr] = idx
     c.adjustMemory(memSize)
     c.moveToFront(idx)
-    c.mu.Unlock()
 }
 
 func (c *Cache) Delete(key []byte) {
     c.mu.Lock()
+    defer c.mu.Unlock()
+
     keyStr := cx.B2s(key)
     if idx, ok := c.indexMap[keyStr]; ok {
         memSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
@@ -112,7 +114,6 @@ func (c *Cache) Delete(key []byte) {
         c.detach(idx)
         delete(c.indexMap, keyStr)
     }
-    c.mu.Unlock()
 }
 
 func (c *Cache) evict() {
