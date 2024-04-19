@@ -23,15 +23,16 @@ package lrubytes
 
 import (
     "sync"
-    cx "github.com/cloudxaas/gocx"
+    "unsafe"
 )
 
 type Cache struct {
     maxMemory       int64
     currentMemory   int64
-    evictBatchSize  int    // Store the number of items to evict at once
+    evictBatchSize  int
     entries         []entry
-    indexMap        map[string]int
+    freeEntries     []int // stack of indices of free entries
+    indexMap        map[uintptr]int // map of byte slice pointers to entry indices
     head, tail      int
     mu              sync.Mutex
 }
@@ -41,15 +42,16 @@ type entry struct {
     prev, next int
 }
 
-// NewLRUCache now accepts an additional parameter for batch eviction size
+// NewLRUCache initializes a new LRU Cache with given maximum memory and eviction batch size.
 func NewLRUCache(maxMemory int64, evictBatchSize int) *Cache {
     return &Cache{
         maxMemory:      maxMemory,
-        evictBatchSize: evictBatchSize, // Initialize evictBatchSize
+        evictBatchSize: evictBatchSize,
         entries:        make([]entry, 0),
-        indexMap:       make(map[string]int),
+        indexMap:       make(map[uintptr]int),
         head:           -1,
         tail:           -1,
+        freeEntries:    make([]int, 0),
     }
 }
 
@@ -63,86 +65,53 @@ func (c *Cache) adjustMemory(delta int64) {
 
 func (c *Cache) Get(key []byte) ([]byte, bool) {
     c.mu.Lock()
-    defer c.mu.Unlock()
-    
-    keyStr := cx.B2s(key)
-    if idx, ok := c.indexMap[keyStr]; ok {
+
+    ptr := uintptr(unsafe.Pointer(&key[0]))
+    if idx, ok := c.indexMap[ptr]; ok {
+        entry := &c.entries[idx]
         if idx != c.head {
             c.moveToFront(idx)
         }
-        return c.entries[idx].value, true
+        c.mu.Unlock()
+        return entry.value, true
     }
+    c.mu.Unlock()
     return nil, false
 }
 
 func (c *Cache) Put(key, value []byte) {
     c.mu.Lock()
-    defer c.mu.Unlock()
 
-    keyStr := cx.B2s(key)
+    ptr := uintptr(unsafe.Pointer(&key[0]))
     memSize := c.estimateMemory(key, value)
 
-    if idx, ok := c.indexMap[keyStr]; ok {
+    if idx, ok := c.indexMap[ptr]; ok {
         oldMemSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
         c.adjustMemory(memSize - oldMemSize)
         c.entries[idx].value = value
         c.moveToFront(idx)
+        c.mu.Unlock()
         return
     }
 
-    if c.currentMemory + memSize > c.maxMemory {
-        for c.currentMemory + memSize > c.maxMemory {
-            c.evict()
-        }
+    if c.currentMemory+memSize > c.maxMemory {
+        c.evict()
     }
 
-    c.entries = append(c.entries, entry{key: key, value: value})
-    idx := len(c.entries) - 1
-    c.indexMap[keyStr] = idx
+    var idx int
+    if len(c.freeEntries) > 0 {
+        idx = c.freeEntries[len(c.freeEntries)-1]
+        c.freeEntries = c.freeEntries[:len(c.freeEntries)-1]
+        c.entries[idx] = entry{key: key, value: value}
+    } else {
+        c.entries = append(c.entries, entry{key: key, value: value})
+        idx = len(c.entries) - 1
+    }
+
+    c.indexMap[ptr] = idx
     c.adjustMemory(memSize)
     c.moveToFront(idx)
-}
-
-func (c *Cache) Delete(key []byte) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-
-    keyStr := cx.B2s(key)
-    if idx, ok := c.indexMap[keyStr]; ok {
-        memSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
-        c.adjustMemory(-memSize)
-        c.detach(idx)
-        delete(c.indexMap, keyStr)
-    }
-}
-
-func (c *Cache) evict() {
-    for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
-        oldKeyStr := cx.B2s(c.entries[c.tail].key)
-        memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
-        c.adjustMemory(-memSize)
-        c.detach(c.tail)
-        delete(c.indexMap, oldKeyStr)
-        if c.tail == -1 { // Check if the tail is -1 after detaching to safely exit the loop
-            break
-        }
-    }
-}
-
-
-func (c *Cache) detach(idx int) {
-    if c.entries[idx].prev != -1 {
-        c.entries[c.entries[idx].prev].next = c.entries[idx].next
-    }
-    if c.entries[idx].next != -1 {
-        c.entries[c.entries[idx].next].prev = c.entries[idx].prev
-    }
-    if idx == c.head {
-        c.head = c.entries[idx].next
-    }
-    if idx == c.tail {
-        c.tail = c.entries[idx].prev
-    }
+    c.mu.Unlock()
 }
 
 func (c *Cache) moveToFront(idx int) {
@@ -150,17 +119,61 @@ func (c *Cache) moveToFront(idx int) {
         return
     }
     c.detach(idx)
-    c.entries[idx].prev = -1
-    c.entries[idx].next = c.head
+
     if c.head != -1 {
         c.entries[c.head].prev = idx
     }
+    c.entries[idx].next = c.head
+    c.entries[idx].prev = -1
     c.head = idx
+
+    if c.tail == -1 {
+        c.tail = idx
+    }
+
+    if c.tail == idx {
+        c.tail = c.entries[idx].prev
+    }
 }
 
-// CurrentMemory returns the current memory usage of the cache.
-func (c *Cache) CurrentMemory() int64 {
+func (c *Cache) evict() {
+    for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
+        idx := c.tail
+        memSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
+        c.adjustMemory(-memSize)
+        c.detach(idx)
+        c.freeEntries = append(c.freeEntries, idx)
+    }
+}
+
+func (c *Cache) detach(idx int) {
+    if c.entries[idx].prev != -1 {
+        c.entries[c.entries[idx].prev].next = c.entries[idx].next
+    } else {
+        c.head = c.entries[idx].next
+    }
+
+    if c.entries[idx].next != -1 {
+        c.entries[c.entries[idx].next].prev = c.entries[idx].prev
+    } else {
+        c.tail = c.entries[idx].prev
+    }
+
+    if c.head == -1 {
+        c.tail = -1
+    }
+}
+
+func (c *Cache) Delete(key []byte) {
     c.mu.Lock()
-    defer c.mu.Unlock()
-    return c.currentMemory
+
+    ptr := uintptr(unsafe.Pointer(&key[0]))
+    if idx, ok := c.indexMap[ptr]; ok {
+        memSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
+        c.adjustMemory(-memSize)
+        c.detach(idx)
+        c.freeEntries = append(c.freeEntries, idx)
+        delete(c.indexMap, ptr)
+    }
+    c.mu.Unlock()
 }
