@@ -1,4 +1,4 @@
-module github.com/cloudxaas/gocache/lru/bytes
+module github.com/Gobd/gocache/lru/bytes
 
 go 1.22.2
 
