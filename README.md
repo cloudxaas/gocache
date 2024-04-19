@@ -19,4 +19,4 @@ cxlrubytes thus is designed for:
 2. Zero allocation (so no garbage collection)
 3. Maximizing memory usage (but not being limited by item capacity)
 
-Look for the "limitation" explanation of cxlrubytes on item eviction, which, if set properly by the user, will give wonderful results.
+Will do other input parameters in future but currently, converting everything to []byte and using this gives wonderful results.
