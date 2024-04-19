@@ -11,7 +11,7 @@
 # Fastest Zero Allocation LRU Cache for Golang 
 (for key, value pairs in []byte)
 
-## cxlrubytes
+## Accelru (cxlrubytes)
 
 Supposingly having the best cache hit ratio (in zero allocation class) with "optimum" memory usage.
 
