@@ -23,8 +23,6 @@ package lrubytes
 
 import (
     "sync"
-//    "log"
-    //"os"
     cx "github.com/cloudxaas/gocx"
 )
 
@@ -79,7 +77,6 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 
 func (c *Cache) Put(key, value []byte) {
     c.mu.Lock()
-    defer c.mu.Unlock()
 
     keyStr := cx.B2s(key)
     memSize := c.estimateMemory(key, value)
@@ -89,6 +86,7 @@ func (c *Cache) Put(key, value []byte) {
         c.adjustMemory(memSize - oldMemSize)
         c.entries[idx].value = value
         c.moveToFront(idx)
+        c.mu.Unlock()
         return
     }
 
@@ -113,6 +111,7 @@ func (c *Cache) Put(key, value []byte) {
             }
         }
     }
+    c.mu.Unlock()
 }
 
 func (c *Cache) moveToFront(idx int) {
@@ -180,29 +179,17 @@ func (c *Cache) detach(idx int) {
 }
 
 func (c *Cache) evict() {
-    /*
-    if c.tail == -1 {
-        os.Exit(1) // Or handle the empty cache case more gracefully
-    }
-    log.Printf("Starting eviction: BatchSize = %d, Current Tail = %d\n", c.evictBatchSize, c.tail)
-    */
-    
     for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
         oldKeyStr := cx.B2s(c.entries[c.tail].key)
         memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
         c.adjustMemory(-memSize)
-        
-//        log.Printf("deleting 1... = %d", c.tail)
         c.detach(c.tail)
         
         if c.tail != -1 { // Verify tail is valid before proceeding
-           // log.Printf("deleting 2... = %d", c.tail)
             delete(c.indexMap, oldKeyStr)
-            //log.Printf("Deleted key %s from position %d, new tail is %d\n", oldKeyStr, c.tail, c.tail)
         }
 
         if c.tail == -1 { // Break if no more items to evict
-            //log.Printf("Cache is empty after eviction.")
             break
         }
     }
