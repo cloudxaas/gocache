@@ -10,7 +10,7 @@ Feedback / comments / suggestions on improvement appreciated (stars too).
 
 Check [lru/bytes](https://github.com/cloudxaas/gocache/tree/main/lru/bytes) for details for key, value in []byte (tested).
 
-Check [lru](https://github.com/cloudxaas/gocache/tree/main/lru) for untested Any type details (tested).
+Check [lru](https://github.com/cloudxaas/gocache/tree/main/lru) for Any type details (untested).
 
 ## Motivation
 
