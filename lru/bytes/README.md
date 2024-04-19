@@ -116,8 +116,9 @@ func main() {
 1. You need to set the eviction count parameter according to usage pattern, it's not a limitation, you can set as 1 or whatever, up to you.
 2. Bytes version currently support []byte only as key and value but you can easily convert other types to []byte.
 3. Size entry is an estimated size of the cache only. May deviate by a few bytes or so in actual use.
+4. up to 2^63/2 keys for 64 bit system and 2 billion items for 32 bit systems. (not tested on 32bit though, if u need this feature and it doesnt work, drop an issue. will see how to fix for u)
 
-# Roadmap / Todo
+Roadmap / Todo
 - add more types / generic types
 - maybe use a swiss map
 - add ttl support
