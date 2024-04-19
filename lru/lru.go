@@ -131,4 +131,36 @@ func (c *Cache[K Sizer, V Sizer]) Delete(key K) {
     }
 }
 
-// detach removes an entry from the linked list part
+// detach removes an entry from the linked list part of the cache.
+func (c *Cache[K Sizer, V Sizer]) detach(idx int) {
+    if c.entries[idx].prev != -1 {
+        c.entries[c.entries[idx].prev].next = c.entries[idx].next
+    } else {
+        c.head = c.entries[idx].next
+    }
+
+    if c.entries[idx].next != -1 {
+        c.entries[c.entries[idx].next].prev = c.entries[idx].prev
+    } else {
+        c.tail = c.entries[idx].prev
+    }
+
+    if c.head == -1 {
+        c.tail = -1
+    }
+}
+
+// evict removes the least recently used items based on the eviction batch size.
+func (c *Cache[K Sizer, V Sizer]) evict() {
+    for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
+        idx := c.tail
+        c.adjustMemory(-c.estimateMemory(c.entries[idx].key, c.entries[idx].value))
+        c.detach(idx)
+        c.freeEntries = append(c.freeEntries, idx)
+    }
+}
+
+// adjustMemory modifies the current memory tracking.
+func (c *Cache[K Sizer, V Sizer]) adjustMemory(delta int64) {
+    c.currentMemory += delta
+}
