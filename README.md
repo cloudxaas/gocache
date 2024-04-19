@@ -1,8 +1,7 @@
+![fastestlruingolangaccelru](https://github.com/cloudxaas/gocache/assets/104323920/5948a699-64c8-47b8-a5d6-5afedb6a3976)
 
 
-![fastestgolanglru](https://github.com/cloudxaas/gocache/assets/104323920/6eae33fa-558c-4a32-aad1-a2ba0159cebd)
-
-<h2>Accelru</h2>
+<center><h2>Accelru</h2></center>
 ---
 " Let's *Acce*lerate *LRU* "
 
