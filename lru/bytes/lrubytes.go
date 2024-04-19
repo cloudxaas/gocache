@@ -116,14 +116,24 @@ func (c *Cache) Delete(key []byte) {
 }
 
 func (c *Cache) evict() {
-    for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
-        oldKeyStr := string(c.entries[c.tail].key)
+    // Start eviction only if necessary
+    if c.currentMemory + memSize <= c.maxMemory {
+        return
+    }
+
+    // Evict enough entries to fit the new item
+    evictedMemory := int64(0)
+    targetMemory := c.currentMemory + memSize - c.maxMemory
+    for evictedMemory < targetMemory && c.tail != -1 {
+        oldKeyStr := cx.B2s(c.entries[c.tail].key)
         memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
+        evictedMemory += memSize
         c.adjustMemory(-memSize)
         c.detach(c.tail)
         delete(c.indexMap, oldKeyStr)
     }
 }
+
 
 func (c *Cache) detach(idx int) {
     if c.entries[idx].prev != -1 {
