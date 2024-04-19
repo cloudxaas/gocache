@@ -10,6 +10,7 @@ if you have roughly (you think) 1 mil items (capacity), you can set eviction cou
 - **Memory-Size Limited**: Unlike other LRU caches that limit the number of entries, this cache controls the total memory used, allowing for better resource management in memory-constrained environments.
 - **High Performance**: Designed with performance in mind, benchmarks demonstrate extremely low latency and zero allocations during operations, ensuring minimal impact on application throughput.
 - **Concurrency Safe**: Implements synchronization to manage concurrent access, making it suitable for high-concurrency scenarios.
+- **1 Item or Batch evictions**: When cache is filled, eviction by batch or 1 by 1, you can set this value.
 
 ## Motivation
 Most lru cache available online for golang are set by capacity count, which means you may OOM your program. With this lru, once you set the memory size limit, you do not need to worry about OOM or garbage collection issues with zero allocation. OOM = Out of memory.
@@ -114,6 +115,7 @@ func main() {
 # Caveats / Limitations
 1. You need to set the eviction count parameter according to usage pattern, it's not a limitation, you can set as 1 or whatever, up to you.
 2. Bytes version currently support []byte only as key and value but you can easily convert other types to []byte.
+3. Size entry is an estimated size of the cache only. May deviate by a few bytes or so in actual use.
 
 # Roadmap / Todo
 - add more types / generic types
