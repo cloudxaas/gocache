@@ -29,7 +29,7 @@ func NewShardedCache(shardCount uint8, totalMemory int64, evictionCount int) *Sh
 // getShard computes the hash of the key to determine which shard to use
 func (sc *ShardedCache) getShard(key []byte) *Cache {
     hash := xxh3.Hash(key)
-    return sc.shards[uint8(hash) & sc.shardCount - 1]
+    return sc.shards[uint8(hash) & (sc.shardCount - 1)]
 }
 
 // Get retrieves a value from the appropriate shard
