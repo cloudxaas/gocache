@@ -57,6 +57,34 @@ These benchmarks illustrate the efficiency and speed of the cache, which is desi
 
 To use this cache, include it in your Go project and create a cache instance specifying the maximum memory it should use and the number of items to be evicted in a single go, which is faster than 1 by 1 eviction:
 
+
+```go
+package main
+
+import (
+    cxlrubytes "github.com/cloudxaas/gocache/lru/bytes"
+    "fmt"
+)
+
+func main() {
+    // Initialize a new LRU cache with a max memory limit of 10 MB, with an eviction count of 1024 at one go
+    cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024, 1024)
+
+    // Example of adding a value to the cache
+    cache.Put([]byte("key1"), []byte("value1"))
+
+    // Retrieve a value
+    if value, found := cache.Get([]byte("key1")); found {
+        fmt.Println("Retrieved:", string(value))
+    }
+
+    // Delete a value
+    cache.Delete([]byte("key1"))
+}
+
+```
+or
+
 ```go
 package main
 
@@ -88,6 +116,35 @@ func main() {
 
 Theoretically should work better in high concurrency environment with multiple goroutines.
 Use this option when you have a lot of cpu cores.
+
+```go
+
+package main
+
+import (
+    cxlrubytes "github.com/cloudxaas/gocache/lru/bytes"
+    "fmt"
+)
+
+func main() {
+    // Initialize a new sharded LRU cache with a total memory limit of 10 MB across 16 shards
+    shardCount := uint8(16)
+    totalMemory := int64(10 * 1024 * 1024) // 10 MB total memory for the cache, with an eviction count of 1024 at one go
+    cache := cxlrubytes.NewShardedCache(shardCount, totalMemory, 1024)
+
+    // Example of adding and retrieving values
+    cache.Put([]byte("key1"), []byte("value1"))
+    if value, found := cache.Get([]byte("key1")); found {
+        fmt.Println("Retrieved:", string(value))
+    }
+
+    // Delete a value
+    cache.Delete([]byte("key1"))
+}
+```
+or
+
+
 ```go
 package main
 
