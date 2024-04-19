@@ -8,7 +8,9 @@ Supposingly having the best cache hit ratio (in zero allocation class) with "opt
 Please contribute to make it better.
 Feedback / comments / suggestions on improvement appreciated (stars too).
 
-Check [lru/bytes](https://github.com/cloudxaas/gocache/tree/main/lru/bytes) for details.
+Check [lru/bytes](https://github.com/cloudxaas/gocache/tree/main/lru/bytes) for details for key, value in []byte (tested).
+
+Check [lru](https://github.com/cloudxaas/gocache/tree/main/lru) for untested Any type details (tested).
 
 ## Motivation
 
