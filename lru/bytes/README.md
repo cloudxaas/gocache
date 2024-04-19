@@ -1,6 +1,6 @@
 <p align="center">
 
-  <img src="https://github.com/cloudxaas/gocache/assets/104323920/5948a699-64c8-47b8-a5d6-5afedb6a3976" width="40%" height="auto" >![fastestgolanglru]
+  <img src="https://github.com/cloudxaas/gocache/assets/104323920/5948a699-64c8-47b8-a5d6-5afedb6a3976" width="40%" height="auto">
 
     
  <h2 align="center">" Let's <u>Acce</u>lerate <u>LRU</u> " - Accelru</h2>
