@@ -117,7 +117,7 @@ func (c *Cache) Delete(key []byte) {
 
 func (c *Cache) evict() {
     for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
-        oldKeyStr := string(c.entries[c.tail].key)
+        oldKeyStr := cx.B2s(c.entries[c.tail].key)
         memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
         c.adjustMemory(-memSize)
         c.detach(c.tail)
