@@ -23,6 +23,8 @@ package lrubytes
 
 import (
     "sync"
+//    "log"
+    //"os"
     cx "github.com/cloudxaas/gocx"
 )
 
@@ -77,6 +79,8 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 
 func (c *Cache) Put(key, value []byte) {
     c.mu.Lock()
+    defer c.mu.Unlock()
+
     keyStr := cx.B2s(key)
     memSize := c.estimateMemory(key, value)
 
@@ -85,22 +89,55 @@ func (c *Cache) Put(key, value []byte) {
         c.adjustMemory(memSize - oldMemSize)
         c.entries[idx].value = value
         c.moveToFront(idx)
-        c.mu.Unlock()
         return
     }
 
+    // Evict only if necessary
     if c.currentMemory + memSize > c.maxMemory {
-        for c.currentMemory + memSize > c.maxMemory {
+        for c.currentMemory + memSize > c.maxMemory && c.tail != -1 { // Check if tail is not -1 before trying to evict
             c.evict()
         }
     }
 
-    c.entries = append(c.entries, entry{key: key, value: value})
-    idx := len(c.entries) - 1
-    c.indexMap[keyStr] = idx
-    c.adjustMemory(memSize)
-    c.moveToFront(idx)
-    c.mu.Unlock()
+    // Check again if there's space to add new entry after eviction
+    if c.currentMemory + memSize <= c.maxMemory {
+        c.entries = append(c.entries, entry{key: key, value: value, prev: -1, next: -1})
+        idx := len(c.entries) - 1
+        c.indexMap[keyStr] = idx
+        c.adjustMemory(memSize)
+        c.moveToFront(idx)
+
+        if c.head == idx { // If this is the first element or moved to front as first
+            if c.tail == -1 { // If this was the first element added
+                c.tail = idx
+            }
+        }
+    }
+}
+
+func (c *Cache) moveToFront(idx int) {
+    if idx == c.head {
+        return // It's already the head, nothing to do
+    }
+    c.detach(idx) // Detach from current position
+
+    // Set the previous head
+    if c.head != -1 {
+        c.entries[c.head].prev = idx
+    }
+    c.entries[idx].next = c.head
+    c.entries[idx].prev = -1
+    c.head = idx
+
+    // If there was no head before, this is also the tail
+    if c.tail == -1 {
+        c.tail = idx
+    }
+
+    // If moving the last node to the front, update tail if needed
+    if c.tail == idx {
+        c.tail = c.entries[idx].prev // Update the tail if the moved node was the tail
+    }
 }
 
 func (c *Cache) Delete(key []byte) {
@@ -115,47 +152,58 @@ func (c *Cache) Delete(key []byte) {
     c.mu.Unlock()
 }
 
-func (c *Cache) evict() {
-    for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
-        oldKeyStr := string(c.entries[c.tail].key)
-        memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
-        c.adjustMemory(-memSize)
-        c.detach(c.tail)
-        delete(c.indexMap, oldKeyStr)
-    }
-}
-
 func (c *Cache) detach(idx int) {
+    // Handle previous link
     if c.entries[idx].prev != -1 {
         c.entries[c.entries[idx].prev].next = c.entries[idx].next
-    }
-    if c.entries[idx].next != -1 {
-        c.entries[c.entries[idx].next].prev = c.entries[idx].prev
-    }
-    if idx == c.head {
+    } else {
+        // When removing the head, move the head pointer forward
         c.head = c.entries[idx].next
     }
-    if idx == c.tail {
+
+    // Handle next link
+    if c.entries[idx].next != -1 {
+        c.entries[c.entries[idx].next].prev = c.entries[idx].prev
+    } else {
+        // When removing the tail, move the tail pointer backward
         c.tail = c.entries[idx].prev
     }
-}
 
-func (c *Cache) moveToFront(idx int) {
-    if idx == c.head {
-        return
-    }
-    c.detach(idx)
+    // Reset the node's links
     c.entries[idx].prev = -1
-    c.entries[idx].next = c.head
-    if c.head != -1 {
-        c.entries[c.head].prev = idx
+    c.entries[idx].next = -1
+
+    // Additional check: if the cache is now empty, reset head and tail
+    if c.head == -1 {
+        c.tail = -1 // Ensures that the tail is also reset when all items are evicted
     }
-    c.head = idx
 }
 
-// CurrentMemory returns the current memory usage of the cache.
-func (c *Cache) CurrentMemory() int64 {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    return c.currentMemory
+func (c *Cache) evict() {
+    /*
+    if c.tail == -1 {
+        os.Exit(1) // Or handle the empty cache case more gracefully
+    }
+    log.Printf("Starting eviction: BatchSize = %d, Current Tail = %d\n", c.evictBatchSize, c.tail)
+    */
+    
+    for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
+        oldKeyStr := cx.B2s(c.entries[c.tail].key)
+        memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
+        c.adjustMemory(-memSize)
+        
+//        log.Printf("deleting 1... = %d", c.tail)
+        c.detach(c.tail)
+        
+        if c.tail != -1 { // Verify tail is valid before proceeding
+           // log.Printf("deleting 2... = %d", c.tail)
+            delete(c.indexMap, oldKeyStr)
+            //log.Printf("Deleted key %s from position %d, new tail is %d\n", oldKeyStr, c.tail, c.tail)
+        }
+
+        if c.tail == -1 { // Break if no more items to evict
+            //log.Printf("Cache is empty after eviction.")
+            break
+        }
+    }
 }
