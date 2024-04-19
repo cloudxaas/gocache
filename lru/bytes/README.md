@@ -119,7 +119,8 @@ func main() {
 4. up to 2^63/2 keys for 64 bit system and 2 billion items for 32 bit systems. (not tested on 32bit though, if u need this feature and it doesnt work, drop an issue. will see how to fix for u)
 
 # Roadmap / Todo
-- add more types / generic types
+- add more types / generic types, generic version is here, performance is kind of sad but usable. will improve.
+https://github.com/cloudxaas/gocache/tree/main/lru
 - maybe use a swiss map
 - add ttl support
 
