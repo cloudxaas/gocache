@@ -8,9 +8,6 @@
  <h3 align="center">" Let's *Acce*lerate *LRU* " - Accelru</h3>
 </p>
 
-<h2>Accelru</h2></center>
----
-
 # Fastest Zero Allocation LRU Cache for Golang 
 (for key, value pairs in []byte)
 
