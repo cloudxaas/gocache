@@ -123,8 +123,12 @@ func (c *Cache) evict() {
         c.adjustMemory(-memSize)
         c.detach(c.tail)
         delete(c.indexMap, oldKeyStr)
+        if c.tail == -1 { // Check if the tail is -1 after detaching to safely exit the loop
+            break
+        }
     }
 }
+
 
 func (c *Cache) detach(idx int) {
     if c.entries[idx].prev != -1 {
