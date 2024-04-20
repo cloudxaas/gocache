@@ -1,0 +1,10 @@
+github.com/cloudxaas/gocx v0.0.3 h1:sQYcMsx30hHIG1bHXqIKZ4toQZttHeZnbkl86TKML0g=
+github.com/cloudxaas/gocx v0.0.3/go.mod h1:a7Vx0JKk50lF1WItawPVW8k++xOfuNGNSj1/qVNGD2o=
+github.com/klauspost/cpuid/v2 v2.0.9 h1:lgaqFMSdTdQYdZ04uHyN2d/eKdOMyi2YLSvlQIBFYa4=
+github.com/klauspost/cpuid/v2 v2.0.9/go.mod h1:FInQzS24/EEf25PyTYn52gqo7WaD8xa0213Md/qVLRg=
+github.com/phuslu/lru v1.0.15 h1:4MwFUcIEfAFiHDipMAKKxmkXvGGp1o0Z4RKToVzufgw=
+github.com/phuslu/lru v1.0.15/go.mod h1:ci5hb8dRIa+2I+KcPl4958OWCg09FxwZCP8InU1L1ME=
+github.com/zeebo/assert v1.3.0 h1:g7C04CbJuIDKNPFHmsk4hwZDO5O+kntRxzaUoNXj+IQ=
+github.com/zeebo/assert v1.3.0/go.mod h1:Pq9JiuJQpG8JLJdtkwrJESF0Foym2/D9XMU5ciN/wJ0=
+github.com/zeebo/xxh3 v1.0.2 h1:xZmwmqxHZA8AI603jOQ0tMqmBr9lPeFwGg6d+xy9DC0=
+github.com/zeebo/xxh3 v1.0.2/go.mod h1:5NWz9Sef7zIDm2JHfFlcQvNekmcEl9ekUZQQKCYaDcA=
