@@ -33,7 +33,7 @@ func NewLRUCache(maxMemory int64, evictBatchSize int) *Cache {
 }
 
 func (c *Cache) estimateMemory(key, value []byte) int64 {
-	return int64(len(key) + len(value))
+	return int64(len(value)) + 4
 }
 
 func (c *Cache) adjustMemory(delta int64) {
@@ -165,4 +165,3 @@ func (c *Cache) evict() {
 		}
 	}
 }
-
