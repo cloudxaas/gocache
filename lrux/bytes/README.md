@@ -35,29 +35,28 @@ The cache has been rigorously benchmarked on a system with the following specifi
 
 Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
 ```
-go test -bench=. -benchmem -benchtime=5s
+go test -bench=. -benchmem
 goos: linux
 goarch: amd64
-pkg: github.com/cloudxaas/gocache/lru/bytes
+pkg: github.com/cloudxaas/gocache/lrux/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkPhusluLRUPut-12                       	326702356	        17.88 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUGet-12                       	365260231	        16.93 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUDelete-12                    	674765379	         9.300 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesPut-12                      	344896886	        16.53 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGet-12                      	403951382	        14.92 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDelete-12                   	1000000000	         4.122 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesPutParallel-12              	122537355	        48.41 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGetParallel-12              	133525422	        45.80 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDeleteParallel-12           	203691690	        28.92 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedPut-12               	251291450	        24.22 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGet-12               	277039623	        21.63 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDelete-12            	769024676	         8.088 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedPutParallel-12       	254472415	        21.83 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGetParallel-12       	257511759	        23.31 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDeleteParallel-12    	1000000000	         5.736 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUSet-12                        43065601                27.89 ns/op            0 B/op          0 allocs/op
+BenchmarkPhusluLRUGet-12                        71053752                17.09 ns/op            0 B/op          0 allocs/op
+BenchmarkPhusluLRUDelete-12                     131928775                9.061 ns/op           0 B/op          0 allocs/op
+BenchmarkCXLRUBytesSet-12                       76250018                15.86 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesGet-12                       83375414                14.05 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesDel-12                       251063827                4.825 ns/op           0 B/op          0 allocs/op
+BenchmarkCXLRUBytesSetParallel-12               28785394                48.20 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesGetParallel-12               26214566                46.60 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesDelParallel-12               34564299                33.40 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedSet-12                52624578                21.94 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedGet-12                89751607                12.56 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedDel-12                166306846                7.186 ns/op           0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedSetParallel-12        65316200                18.20 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedGetParallel-12        59256444                21.89 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedDelParallel-12        175149573                7.826 ns/op           0 B/op          0 allocs/op
 PASS
-ok  	github.com/cloudxaas/gocache/lru/bytes	141.326s
-
+ok      github.com/cloudxaas/gocache/lrux/bytes 28.996s
 ```
 reference : https://github.com/phuslu/lru
 
@@ -66,130 +65,9 @@ These benchmarks illustrate the efficiency and speed of the cache, which is desi
 
 ## Usage
 
-To use this cache, include it in your Go project and create a cache instance specifying the maximum memory it should use and the number of items to be evicted in a single go, which is faster than 1 by 1 eviction:
-
-
-```go
-package main
-
-import (
-    cxlrubytes "github.com/cloudxaas/gocache/lru/bytes"
-    "fmt"
-)
-
-func main() {
-    // Initialize a new LRU cache with a max memory limit of 10 MB, with an eviction count of 1024 at one go
-    cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024, 1024)
-
-    // Example of adding a value to the cache
-    cache.Put([]byte("key1"), []byte("value1"))
-
-    // Retrieve a value
-    if value, found := cache.Get([]byte("key1")); found {
-        fmt.Println("Retrieved:", string(value))
-    }
-
-    // Delete a value
-    cache.Delete([]byte("key1"))
-}
-
-```
-or
-
-```go
-package main
-
-import (
-    cx "github.com/cloudxaas/gocx"
-    cxlrubytes "github.com/cloudxaas/gocache/lru/bytes"
-    "fmt"
-)
-
-func main() {
-    // Initialize a new LRU cache with a max memory limit of 10 MB, with an eviction count of 1024 at one go
-    cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024, 1024)
-
-    // Example of adding a value to the cache
-    cache.Put(cx.S2b("key1"), cx.S2b("value1"))
-
-    // Retrieve a value
-    if value, found := cache.Get(cx.S2b("key1")); found {
-        fmt.Println("Retrieved:", cx.B2s(value))
-    }
-
-    // Delete a value
-    cache.Delete(cx.S2b("key1"))
-}
-```
-
-
-### Sharded version
-
-Theoretically should work better in high concurrency environment with multiple goroutines.
-Use this option when you have a lot of cpu cores.
-
-```go
-
-package main
-
-import (
-    cxlrubytes "github.com/cloudxaas/gocache/lru/bytes"
-    "fmt"
-)
-
-func main() {
-    // Initialize a new sharded LRU cache with a total memory limit of 10 MB across 16 shards
-    shardCount := uint8(16)
-    totalMemory := int64(10 * 1024 * 1024) // 10 MB total memory for the cache, with an eviction count of 1024 at one go
-    cache := cxlrubytes.NewShardedCache(shardCount, totalMemory, 1024)
-
-    // Example of adding and retrieving values
-    cache.Put([]byte("key1"), []byte("value1"))
-    if value, found := cache.Get([]byte("key1")); found {
-        fmt.Println("Retrieved:", string(value))
-    }
-
-    // Delete a value
-    cache.Delete([]byte("key1"))
-}
-```
-or
-
-
-```go
-package main
-
-import (
-    cx "github.com/cloudxaas/gocx"
-    cxlrubytes "github.com/cloudxaas/gocache/lru/bytes"
-    "fmt"
-)
-
-func main() {
-    // Initialize a new sharded LRU cache with a total memory limit of 10 MB across 16 shards
-    shardCount := uint8(16)
-    totalMemory := int64(10 * 1024 * 1024) // 10 MB total memory for the cache, with an eviction count of 1024 at one go
-    cache := cxlrubytes.NewShardedCache(shardCount, totalMemory, 1024)
-
-    // Example of adding and retrieving values
-    cache.Put(cx.S2b("key1"), cx.S2b("value1"))
-    if value, found := cache.Get(cx.S2b("key1")); found {
-        fmt.Println("Retrieved:", cx.B2s(value))
-    }
-
-    // Delete a value
-    cache.Delete(cx.S2b("key1"))
-}
-```
-
-# Caveats / Limitations
-1. You need to set the eviction count parameter according to usage pattern, it's not a limitation, you can set as 1 or whatever, up to you.
-2. Bytes version currently support []byte only as key and value but you can easily convert other types to []byte.
-3. Size entry is an estimated size of the cache only. May deviate by 24 - 80 bytes per item or so in actual use. (e.g. assume 1mil entries to have 24mb - 80mb additional overhead)
-4. up to 2^63/2 keys for 64 bit system and 2 billion items for 32 bit systems. (not tested on 32bit though, if u need this feature and it doesnt work, drop an issue. will see how to fix for u)
+To use this cache, check the examples folder included, you can configure your own hash function, use xxh3 if you want faster hashing for larger key values > 24 bytes.
 
 # Roadmap / Todo
-- will be changing to Set instead of Put soon
 - add more types / generic types, generic version is here, performance is kind of sad but usable. will improve.
 https://github.com/cloudxaas/gocache/tree/main/lru
 - maybe use a swiss map
