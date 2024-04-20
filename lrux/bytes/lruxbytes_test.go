@@ -7,6 +7,20 @@ import (
 	"github.com/phuslu/lru"
 )
 
+// FNV-1a hash function for byte slices
+func FNV1aHash(key []byte) uint32 {
+	const (
+		offset32 uint32 = 2166136261
+		prime32  uint32 = 16777619
+	)
+	var hash uint32 = offset32
+	for _, c := range key {
+		hash ^= uint32(c)
+		hash *= prime32
+	}
+	return hash
+}
+
 func BenchmarkPhusluLRUSet(b *testing.B) {
 	cache := lru.NewLRUCache[string, []byte](1024 * 100)
 	keys := make([][]byte, 100000)
@@ -53,7 +67,7 @@ func BenchmarkPhusluLRUDelete(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesSet(b *testing.B) {
-	cache := NewLRUCache(1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewLRUCache(1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	values := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
@@ -67,7 +81,7 @@ func BenchmarkCXLRUBytesSet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesGet(b *testing.B) {
-	cache := NewLRUCache(1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewLRUCache(1024*100, 1, FNV1aHash)
 	for i := 0; i < 100000; i++ {
 		cache.Set([]byte{byte(i)}, make([]byte, 1024)) // 1 KB values
 	}
@@ -82,7 +96,7 @@ func BenchmarkCXLRUBytesGet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesDel(b *testing.B) {
-	cache := NewLRUCache(1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewLRUCache(1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
 		keys[i] = []byte{byte(i)}
@@ -96,7 +110,7 @@ func BenchmarkCXLRUBytesDel(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesSetParallel(b *testing.B) {
-	cache := NewLRUCache(1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewLRUCache(1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	values := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
@@ -113,7 +127,7 @@ func BenchmarkCXLRUBytesSetParallel(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesGetParallel(b *testing.B) {
-	cache := NewLRUCache(1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewLRUCache(1024*100, 1, FNV1aHash)
 	for i := 0; i < 100000; i++ {
 		cache.Set([]byte{byte(i)}, make([]byte, 1024)) // 1 KB values
 	}
@@ -132,7 +146,7 @@ func BenchmarkCXLRUBytesGetParallel(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesDelParallel(b *testing.B) {
-	cache := NewLRUCache(1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewLRUCache(1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
 		keys[i] = []byte{byte(i)}
@@ -148,7 +162,7 @@ func BenchmarkCXLRUBytesDelParallel(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesShardedSet(b *testing.B) {
-	cache := NewShardedCache(16, 1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewShardedCache(16, 1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	values := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
@@ -162,14 +176,11 @@ func BenchmarkCXLRUBytesShardedSet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesShardedGet(b *testing.B) {
-	cache := NewShardedCache(16, 1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewShardedCache(16, 1024*100, 1, FNV1aHash)
 	for i := 0; i < 100000; i++ {
 		cache.Set([]byte{byte(i)}, make([]byte, 1024)) // 1 KB values
 	}
 	keys := make([][]byte, b.N)
-	for i := 0; i < b.N; i++ {
-		keys[i] = []byte{byte(i % 100000)}
-	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, _ = cache.Get(keys[i])
@@ -177,7 +188,7 @@ func BenchmarkCXLRUBytesShardedGet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesShardedDel(b *testing.B) {
-	cache := NewShardedCache(16, 1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewShardedCache(16, 1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
 		keys[i] = []byte{byte(i)}
@@ -191,7 +202,7 @@ func BenchmarkCXLRUBytesShardedDel(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesShardedSetParallel(b *testing.B) {
-	cache := NewShardedCache(16, 1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewShardedCache(16, 1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	values := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
@@ -208,7 +219,7 @@ func BenchmarkCXLRUBytesShardedSetParallel(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesShardedGetParallel(b *testing.B) {
-	cache := NewShardedCache(16, 1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewShardedCache(16, 1024*100, 1, FNV1aHash)
 	for i := 0; i < 100000; i++ {
 		cache.Set([]byte{byte(i)}, make([]byte, 1024)) // 1 KB values
 	}
@@ -227,7 +238,7 @@ func BenchmarkCXLRUBytesShardedGetParallel(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesShardedDelParallel(b *testing.B) {
-	cache := NewShardedCache(16, 1024*100, 1, func(key []byte) uint32 { return uint32(key[0]) })
+	cache := NewShardedCache(16, 1024*100, 1, FNV1aHash)
 	keys := make([][]byte, 100000)
 	for i := 0; i < 100000; i++ {
 		keys[i] = []byte{byte(i)}
