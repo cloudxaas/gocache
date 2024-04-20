@@ -8,7 +8,8 @@
 
 # One of The Fastest Zero Allocation LRU Cache in Golang (for key, value pairs in []byte) - AccelruX (cxlrubytes)
 
-# This X version has higher performance at the expense of a bit lower hit ratio
+# This X version has higher performance, much lower memory use, at the expense of a bit lower hit ratio
+works best with keys longer than 24-32bytes
 
 Welcome to the repository for one of the fastest LRU cache implementations available for Go. This LRU cache is uniquely designed to limit the memory usage directly, rather than by the number of entries. This makes it ideal for applications where the memory footprint is critical, such as in embedded systems or high-performance computing environments where resources are tightly managed.
 
