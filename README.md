@@ -20,8 +20,9 @@ Feedback / comments / suggestions on improvement appreciated (stars too).
 
 Check [lru/bytes](https://github.com/cloudxaas/gocache/tree/main/lru/bytes) for details for key, value in []byte (tested).
 
-Check verion X for extreme speed, lower memory footprint at the expense of a bit lower hit ratio
-[lru/bytes](https://github.com/cloudxaas/gocache/tree/main/lrux/bytes) for details for key, value in []byte (tested).
+Check verion X for extreme speed, lower memory footprint at the expense of a bit lower hit ratio.
+
+[lrux/bytes](https://github.com/cloudxaas/gocache/tree/main/lrux/bytes) for details for key, value in []byte (tested).
 
 Check [lru](https://github.com/cloudxaas/gocache/tree/main/lru) for Any type details (untested).
 
