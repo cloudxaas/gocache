@@ -78,7 +78,7 @@ func main() {
     cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024, 1024)
 
     // Example of adding a value to the cache
-    cache.Put([]byte("key1"), []byte("value1"))
+    cache.Set([]byte("key1"), []byte("value1"))
 
     // Retrieve a value
     if value, found := cache.Get([]byte("key1")); found {
@@ -86,7 +86,7 @@ func main() {
     }
 
     // Delete a value
-    cache.Delete([]byte("key1"))
+    cache.Del([]byte("key1"))
 }
 
 ```
@@ -106,7 +106,7 @@ func main() {
     cache := cxlrubytes.NewLRUCache(10 * 1024 * 1024, 1024)
 
     // Example of adding a value to the cache
-    cache.Put(cx.S2b("key1"), cx.S2b("value1"))
+    cache.Set(cx.S2b("key1"), cx.S2b("value1"))
 
     // Retrieve a value
     if value, found := cache.Get(cx.S2b("key1")); found {
@@ -114,7 +114,7 @@ func main() {
     }
 
     // Delete a value
-    cache.Delete(cx.S2b("key1"))
+    cache.Del(cx.S2b("key1"))
 }
 ```
 
@@ -140,13 +140,13 @@ func main() {
     cache := cxlrubytes.NewShardedCache(shardCount, totalMemory, 1024)
 
     // Example of adding and retrieving values
-    cache.Put([]byte("key1"), []byte("value1"))
+    cache.Set([]byte("key1"), []byte("value1"))
     if value, found := cache.Get([]byte("key1")); found {
         fmt.Println("Retrieved:", string(value))
     }
 
     // Delete a value
-    cache.Delete([]byte("key1"))
+    cache.Del([]byte("key1"))
 }
 ```
 or
@@ -168,13 +168,13 @@ func main() {
     cache := cxlrubytes.NewShardedCache(shardCount, totalMemory, 1024)
 
     // Example of adding and retrieving values
-    cache.Put(cx.S2b("key1"), cx.S2b("value1"))
+    cache.Set(cx.S2b("key1"), cx.S2b("value1"))
     if value, found := cache.Get(cx.S2b("key1")); found {
         fmt.Println("Retrieved:", cx.B2s(value))
     }
 
     // Delete a value
-    cache.Delete(cx.S2b("key1"))
+    cache.Del(cx.S2b("key1"))
 }
 ```
 
