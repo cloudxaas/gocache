@@ -2,35 +2,35 @@ package lruxbytes
 
 import (
 	"fmt"
-
-	"github.com/zeebo/xxh3"
 )
 
 // ShardedCache struct containing multiple Cache shards
 type ShardedCache struct {
 	shards     []*Cache
 	shardCount uint8
+	hashFunc   ByteHashFunc
 }
 
-// NewShardedCache creates a new ShardedCache with the specified number of shards, total memory limit, and eviction count
-func NewShardedCache(shardCount uint8, totalMemory int64, evictionCount int) *ShardedCache {
+// NewShardedCache creates a new ShardedCache with the specified number of shards, total memory limit, eviction count, and a hash function
+func NewShardedCache(shardCount uint8, totalMemory int64, evictionCount int, hashFunc ByteHashFunc) *ShardedCache {
 	if shardCount == 0 || (shardCount&(shardCount-1)) != 0 {
-		panic(fmt.Errorf("cxlrubytes shardCount must be a non-zero multiple of 2, got %d", shardCount))
+		panic(fmt.Errorf("shardCount must be a non-zero power of 2, got %d", shardCount))
 	}
-	maxMemoryPerShard := totalMemory / int64(shardCount) // Calculate memory per shard
+	maxMemoryPerShard := totalMemory / int64(shardCount)
 	shards := make([]*Cache, shardCount)
 	for i := uint8(0); i < shardCount; i++ {
-		shards[i] = NewLRUCache(maxMemoryPerShard, evictionCount) // Now passes evictionCount to each shard
+		shards[i] = NewLRUCache(maxMemoryPerShard, evictionCount, hashFunc)
 	}
 	return &ShardedCache{
 		shards:     shards,
 		shardCount: shardCount,
+		hashFunc:   hashFunc,
 	}
 }
 
-// getShard comSetes the hash of the key to determine which shard to use
+// getShard computes the hash of the key to determine which shard to use
 func (sc *ShardedCache) getShard(key []byte) *Cache {
-	hash := xxh3.Hash(key)
+	hash := sc.hashFunc(key)
 	return sc.shards[uint8(hash)&(sc.shardCount-1)]
 }
 
@@ -46,7 +46,7 @@ func (sc *ShardedCache) Set(key, value []byte) {
 	shard.Set(key, value)
 }
 
-// Delete removes a key from the appropriate shard
+// Del removes a key from the appropriate shard
 func (sc *ShardedCache) Del(key []byte) {
 	shard := sc.getShard(key)
 	shard.Del(key)

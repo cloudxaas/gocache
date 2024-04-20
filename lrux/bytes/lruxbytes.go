@@ -2,9 +2,10 @@ package lruxbytes
 
 import (
 	"sync"
-
-	"github.com/zeebo/xxh3"
 )
+
+// Define the hash function type for bytes
+type ByteHashFunc func([]byte) uint32
 
 type Cache struct {
 	maxMemory      int64
@@ -13,6 +14,7 @@ type Cache struct {
 	entries        []entry
 	indexMap       map[uint32]uint32 // Change to uint32 for index
 	head, tail     int
+	hashFunc       ByteHashFunc // User-defined hash function
 	mu             sync.Mutex
 }
 
@@ -21,7 +23,7 @@ type entry struct {
 	prev, next int
 }
 
-func NewLRUCache(maxMemory int64, evictBatchSize int) *Cache {
+func NewLRUCache(maxMemory int64, evictBatchSize int, hashFunc func([]byte) uint32) *Cache {
 	return &Cache{
 		maxMemory:      maxMemory,
 		evictBatchSize: evictBatchSize,
@@ -29,6 +31,7 @@ func NewLRUCache(maxMemory int64, evictBatchSize int) *Cache {
 		indexMap:       make(map[uint32]uint32), // Adjusted to uint32
 		head:           -1,
 		tail:           -1,
+		hashFunc:       hashFunc, // Assign the user-defined hash function
 	}
 }
 
@@ -41,7 +44,7 @@ func (c *Cache) adjustMemory(delta int64) {
 }
 
 func (c *Cache) hashKey(key []byte) uint32 {
-	return uint32(xxh3.Hash(key))
+	return c.hashFunc(key) // Use the user-defined hash function
 }
 
 func (c *Cache) Get(key []byte) ([]byte, bool) {
