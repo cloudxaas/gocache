@@ -41,7 +41,7 @@ func (c *Cache) adjustMemory(delta int64) {
 }
 
 func (c *Cache) hashKey(key []byte) uint32 {
-	return xxh3.Hash(key)
+	return uint32(xxh3.Hash(key))
 }
 
 func (c *Cache) Get(key []byte) ([]byte, bool) {
