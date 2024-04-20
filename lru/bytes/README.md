@@ -32,29 +32,28 @@ The cache has been rigorously benchmarked on a system with the following specifi
 
 Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
 ```
-go test -bench=. -benchmem -benchtime=5s
+o test -bench=. -benchmem
 goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lru/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkPhusluLRUPut-12                       	326702356	        17.88 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUGet-12                       	365260231	        16.93 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUDelete-12                    	674765379	         9.300 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesPut-12                      	344896886	        16.53 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGet-12                      	403951382	        14.92 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDelete-12                   	1000000000	         4.122 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesPutParallel-12              	122537355	        48.41 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGetParallel-12              	133525422	        45.80 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDeleteParallel-12           	203691690	        28.92 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedPut-12               	251291450	        24.22 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGet-12               	277039623	        21.63 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDelete-12            	769024676	         8.088 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedPutParallel-12       	254472415	        21.83 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGetParallel-12       	257511759	        23.31 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDeleteParallel-12    	1000000000	         5.736 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUSet-12                        63946095                18.39 ns/op            0 B/op          0 allocs/op
+BenchmarkPhusluLRUGet-12                        69792022                16.35 ns/op            0 B/op          0 allocs/op
+BenchmarkPhusluLRUDelete-12                     138902715                8.764 ns/op           0 B/op          0 allocs/op
+BenchmarkCXLRUBytesSet-12                       73397277                16.04 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesGet-12                       81011492                14.44 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesDel-12                       296433568                4.013 ns/op           0 B/op          0 allocs/op
+BenchmarkCXLRUBytesSetParallel-12               24877929                47.55 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesGetParallel-12               26370724                44.51 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesDelParallel-12               42026001                28.40 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedSet-12                51489772                23.30 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedGet-12                54076873                21.26 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedDel-12                156185623                7.844 ns/op           0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedSetParallel-12        60227346                22.03 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedGetParallel-12        52058894                22.67 ns/op            0 B/op          0 allocs/op
+BenchmarkCXLRUBytesShardedDelParallel-12        208552095                5.342 ns/op           0 B/op          0 allocs/op
 PASS
-ok  	github.com/cloudxaas/gocache/lru/bytes	141.326s
-
+ok      github.com/cloudxaas/gocache/lru/bytes  26.591s
 ```
 reference : https://github.com/phuslu/lru
 
