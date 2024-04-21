@@ -11,6 +11,14 @@
 # This X version has higher performance, much lower memory use, at the expense of a bit lower hit ratio
 predefine hashing function for hashing keys up to 4 billion keys
 
+Difference with non-x version:
+
+1. non-x uses map[string]int, x uses map[uint32]uint32 (special thanks and credit for phuslu/lru suggestion)
+
+2. non-x does not need a hashing mechanism, you need to predefine the hashing mechanism for x version.
+ 
+3. non-x can use up to available memory and will save all keys as much as possible (may have better hit ratio), x version's hit ratio depends on the hash mechanism used.
+
 Welcome to the repository for one of the fastest LRU cache implementations available for Go. This LRU cache is uniquely designed to limit the memory usage directly, rather than by the number of entries. This makes it ideal for applications where the memory footprint is critical, such as in embedded systems or high-performance computing environments where resources are tightly managed.
 
 (adjust the limit of eviction count to match usage scenario)
