@@ -17,7 +17,7 @@ Difference with non-x version:
 
 2. non-x does not need a hashing mechanism, you need to predefine the hashing mechanism for x version.
  
-3. non-x can use up to available memory and will save all keys as much as possible (may have better hit ratio), x version's hit ratio depends on the hash mechanism used.
+3. non-x can use up to available memory and will save all keys as much as possible (may have better hit ratio), x version's hit ratio depends on the hash mechanism used, memory can be more efficient but hit ratio may suffer at collision of hash
 
 Welcome to the repository for one of the fastest LRU cache implementations available for Go. This LRU cache is uniquely designed to limit the memory usage directly, rather than by the number of entries. This makes it ideal for applications where the memory footprint is critical, such as in embedded systems or high-performance computing environments where resources are tightly managed.
 
