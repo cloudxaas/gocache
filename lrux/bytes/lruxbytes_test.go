@@ -8,16 +8,16 @@ import (
     "github.com/phuslu/lru"
     "github.com/maypok86/otter"
     "github.com/elastic/go-freelru"
-    "github.com/cespare/xxhash/v2"
     hashicorp "github.com/hashicorp/golang-lru/v2"
+)
+
+const (
+	offset32 uint32 = 2166136261
+	prime32  uint32 = 16777619
 )
 
 // FNV-1a hash function for byte slices
 func FNV1aHash(key []byte) uint32 {
-	const (
-		offset32 uint32 = 2166136261
-		prime32  uint32 = 16777619
-	)
 	var hash uint32 = offset32
 	for _, c := range key {
 		hash ^= uint32(c)
@@ -26,9 +26,16 @@ func FNV1aHash(key []byte) uint32 {
 	return hash
 }
 
-func hashStringXXHASH(s string) uint32 {
-    return uint32(xxhash.Sum64String(s))
+// FNV-1a hash function for strings
+func FNV1aHashStr(key string) uint32 {
+    var hash uint32 = offset32
+    for _, c := range key {
+        hash ^= uint32(c)
+        hash *= prime32
+    }
+    return hash
 }
+
 
 var (
     keys   []string
@@ -84,7 +91,7 @@ func BenchmarkHashicorpLRURemove(b *testing.B) {
 }
 
 func BenchmarkGoFreeLRUSet(b *testing.B) {
-    lru, err := freelru.New[string, uint64](100 * 1000, hashStringXXHASH)
+    lru, err := freelru.New[string, uint64](100 * 1000, FNV1aHashStr)
     if err != nil {
         b.Fatal(err)
     }
@@ -95,7 +102,7 @@ func BenchmarkGoFreeLRUSet(b *testing.B) {
 }
 
 func BenchmarkGoFreeLRUGet(b *testing.B) {
-    lru, err := freelru.New[string, uint64](100 * 1000, hashStringXXHASH)
+    lru, err := freelru.New[string, uint64](100 * 1000, FNV1aHashStr)
     if err != nil {
         b.Fatal(err)
     }
@@ -109,7 +116,7 @@ func BenchmarkGoFreeLRUGet(b *testing.B) {
 }
 
 func BenchmarkGoFreeLRURemove(b *testing.B) {
-    lru, err := freelru.New[string, uint64](100 * 1000, hashStringXXHASH)
+    lru, err := freelru.New[string, uint64](100 * 1000, FNV1aHashStr)
     if err != nil {
         b.Fatal(err)
     }
@@ -207,7 +214,6 @@ func BenchmarkPhusluLRUDelete(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesSet(b *testing.B) {
-    //our limit setting is by memory size capacity, so 10 bytes for key and 1024 bytes for value for 100,000 items)
     cache := NewLRUCache(100000 * (10+1024), 1, FNV1aHash)
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
@@ -216,7 +222,6 @@ func BenchmarkCXLRUBytesSet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesGet(b *testing.B) {
-    //our limit setting is by memory size capacity, so 10 bytes for key and 1024 bytes for value for 100,000 items)
     cache := NewLRUCache(100000 * (10+1024), 1, FNV1aHash)
     for i := 0; i < 100000; i++ {
         cache.Set(bKeys[i], values[i])
@@ -228,7 +233,6 @@ func BenchmarkCXLRUBytesGet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesDel(b *testing.B) {
-    //our limit setting is by memory size capacity, so 10 bytes for key and 1024 bytes for value for 100,000 items)
     cache := NewLRUCache(100000 * (10+1024), 1, FNV1aHash)
     for i := 0; i < 100000; i++ {
         cache.Set(bKeys[i], values[i])
