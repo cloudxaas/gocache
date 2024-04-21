@@ -53,23 +53,24 @@ goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lrux/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkHashicorpLRUSet-12       	129835736	        49.90 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHashicorpLRUGet-12       	139025212	        42.78 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHashicorpLRURemove-12    	707000680	         8.766 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoFreeLRUSet-12          	159482792	        36.43 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoFreeLRUGet-12          	174360614	        37.21 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoFreeLRURemove-12       	645199822	         9.103 ns/op	       0 B/op	       0 allocs/op
-BenchmarkOtterSet-12*              	34687963	       170.9 ns/op	      64 B/op	       1 allocs/op
-BenchmarkOtterGet-12              	83873276	        90.43 ns/op	       0 B/op	       0 allocs/op
-BenchmarkOtterDelete-12           	499256071	        12.01 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUSet-12          	304393112	        18.98 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUGet-12          	305822038	        17.61 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUDelete-12       	625983367	         9.895 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesSet-12         	359252115	        16.11 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGet-12         	404628550	        14.81 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDel-12         	1000000000	         4.827 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRUSet-12       	123297104	        46.25 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRUGet-12       	131854731	        45.62 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRURemove-12    	705777380	         8.485 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRUSet-12          	233543793	        25.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRUGet-12          	250022937	        24.73 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRURemove-12       	655460384	         9.461 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOtterSet-12              	36643623	       163.1 ns/op	      64 B/op	       1 allocs/op
+BenchmarkOtterGet-12              	86207361	        71.35 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOtterDelete-12           	503693424	        11.67 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUSet-12          	299558884	        19.74 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUGet-12          	332732420	        18.61 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUDelete-12       	623987602	         9.441 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSet-12         	378581541	        15.89 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGet-12         	396226093	        14.75 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDel-12         	1000000000	         4.906 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	github.com/cloudxaas/gocache/lrux/bytes	123.636s
+ok  	github.com/cloudxaas/gocache/lrux/bytes	123.575s
+
 ```
 reference :
 
