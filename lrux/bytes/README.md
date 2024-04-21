@@ -86,9 +86,9 @@ These benchmarks results vary, please adjust parameters to use for your own use 
 *otter has 1 byte alloc / op, in these supposingly zero alloc benchmark cache
 
 ## NOTE : AccelruX capacity is set in terms of MEMORY SIZE LIMIT and not NUMBER OF ITEMS LIMIT.
-## The benchmarks to test all case scenario is too wide and varied. Please do your own benchmark on it. There are sharded modes, non-sharded modes etc with different settings designed for different use case. Do your own research and do post comments / suggestions on issue tracker. We respect the purpose of different caches designed for use in different scenarios. Accelru and 
+## The benchmarks to test all case scenario is too wide and varied. Please do your own benchmark on it. There are sharded modes, non-sharded modes etc with different settings designed for different use case. Do your own research and do post comments / suggestions on issue tracker. We respect the purpose of different caches designed for use in different scenarios.  
 
-## AccelruX are designed for high performance with zero allocation, limited only by memory size instead of item capacity limit. 
+## Accelru and AccelruX are designed for high performance with zero allocation, limited only by memory size instead of item capacity limit. 
 
 ## Usage
 
