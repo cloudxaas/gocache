@@ -44,7 +44,7 @@ The cache has been rigorously benchmarked on a system with the following specifi
 ## NOTE : AccelruX capacity is set in terms of MEMORY SIZE LIMIT and not NUMBER OF ITEMS LIMIT.
 
 #### Note : Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
-**These benchmarks are for reference only, the memory used is far lesser than most of the rest used AND has higher eviction than the rest, resulting in much lower hit ratio because most of them are using 10000*(1000+8)bytes ~ 10,080,000 bytes when cxlruxbytes is only using 100,000bytes, 100x lesser memory, for a fairer comparison, use 10mb setting for capacity (but this will NOT result in many evictions, giving it much much higher hit ratio. do test it to verify claims.
+**These benchmarks are for reference only, the memory used is far lesser than most of the rest used AND has higher eviction than the rest (only in this benchmark, for production use, please set it more than 100kb cache please), resulting in much lower hit ratio because most of them are using 10000*(1000+8)bytes ~ 10,080,000 bytes when cxlruxbytes is only using 100,000bytes, 100x lesser memory, for a fairer comparison, use 10mb setting for capacity (but this will NOT result in many evictions, giving it much much higher hit ratio. do test it to verify claims.
 **
 
 ```
