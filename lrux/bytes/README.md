@@ -92,6 +92,7 @@ https://github.com/hashicorp/golang-lru
 https://github.com/elastic/go-freelru
 
 These benchmarks results vary, please adjust parameters to use for your own use case. 
+
 *otter has 1 byte alloc / op, in these zero alloc benchmark
 
 ## NOTE : AccelruX capacity is set in terms of MEMORY SIZE LIMIT and not NUMBER OF ITEMS LIMIT.
