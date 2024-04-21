@@ -102,7 +102,6 @@ To use this cache, check the examples folder included, you can configure your ow
 # Roadmap / Todo
 - add more types / generic types, generic version is here, performance is kind of sad but usable. will improve.
 https://github.com/cloudxaas/gocache/tree/main/lru
-- maybe use a swiss map
 - add ttl support
 
 Contributors welcome.
