@@ -8,7 +8,7 @@
 
 # One of The Fastest Zero Allocation LRU Cache in Golang (for key, value pairs in []byte) - AccelruX (cxlrubytes)
 
-# This X version has higher performance, much lower memory use, at the expense of a bit lower hit ratio
+# This X version has higher performance, much lower memory use, at the expense of maybe a bit lower hit ratio
 predefine hashing function for hashing keys up to 4 billion keys
 
 Difference with non-x version:
