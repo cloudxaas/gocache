@@ -61,7 +61,9 @@ BenchmarkCXLRUBytesShardedDelParallel-12    	189985650	         6.418 ns/op	    
 PASS
 ok  	github.com/cloudxaas/gocache/lrux/bytes	33.491s
 ```
-reference : https://github.com/phuslu/lru
+reference : 
+https://github.com/maypok86/otter
+https://github.com/phuslu/lru
 
 
 These benchmarks illustrate the efficiency and speed of the cache, which is designed to operate with zero memory allocations during runtime operations, contributing to its high performance.
