@@ -48,26 +48,33 @@ goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lrux/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkOtterSet-12                        	 7456851	       149.1 ns/op	      65 B/op	       1 allocs/op
-BenchmarkOtterGet-12                        	17926213	        71.64 ns/op	       0 B/op	       0 allocs/op
-BenchmarkOtterDelete-12                     	102627896	        11.48 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUSet-12                    	66875689	        18.21 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUGet-12                    	59487871	        16.95 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUDelete-12                 	137954754	         8.624 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesSet-12                   	68247937	        15.28 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGet-12                   	88466262	        13.78 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDel-12                   	253530190	         4.740 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesSetParallel-12           	28983519	        47.33 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGetParallel-12           	25165668	        50.10 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDelParallel-12           	36730446	        31.12 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedSet-12            	60919240	        19.63 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGet-12            	100000000	        18.39 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDel-12            	172000660	         7.133 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedSetParallel-12    	89775692	        12.81 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGetParallel-12    	65157898	        18.55 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDelParallel-12    	189985650	         6.418 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRUSet-12                 	59776335	        18.68 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRUGet-12                 	69722470	        17.15 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRURemove-12              	146819274	         8.295 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRUSet-12                    	34314114	        30.47 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRUGet-12                    	34552854	        35.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRURemove-12                 	136824891	         8.748 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOtterSet-12                        	 7792684	       149.6 ns/op	      65 B/op	       1 allocs/op
+BenchmarkOtterGet-12                        	17524428	        67.42 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOtterDelete-12                     	101478790	        11.86 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUSet-12                    	63850137	        19.26 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUGet-12                    	72362446	        16.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUDelete-12                 	130892822	         8.717 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSet-12                   	77462673	        15.09 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGet-12                   	88257292	        14.09 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDel-12                   	253043168	         4.797 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSetParallel-12           	22535736	        46.59 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGetParallel-12           	23807607	        49.34 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDelParallel-12           	37575604	        30.97 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedSet-12            	60373840	        19.40 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGet-12            	100000000	        12.17 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDel-12            	168262658	         7.127 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedSetParallel-12    	72022780	        18.45 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGetParallel-12    	68527062	        18.41 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDelParallel-12    	185071548	         6.563 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	github.com/cloudxaas/gocache/lrux/bytes	33.491s
+ok  	github.com/cloudxaas/gocache/lrux/bytes	58.903s
+
 ```
 reference :
 
