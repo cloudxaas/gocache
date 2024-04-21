@@ -41,8 +41,10 @@ The cache has been rigorously benchmarked on a system with the following specifi
 - **Architecture**: AMD64
 - **CPU**: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics
 
-**Note : Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
-These benchmarks are for reference only, the memory used is far lesser than most of the rest used AND has hgher eviction than the rest, resulting in lower hit ratio because most of them are using 10000*(1000+8)bytes ~ 10,080,000 bytes when cxlruxbytes is only using 100,000bytes, 100x lesser memory, for a fairer comparison, use 10mb setting for capacity (but this will not result in many evictions, giving it much much higher hit ratio. do test it to verify claims.**
+#### Note : Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
+**These benchmarks are for reference only, the memory used is far lesser than most of the rest used AND has hgher eviction than the rest, resulting in lower hit ratio because most of them are using 10000*(1000+8)bytes ~ 10,080,000 bytes when cxlruxbytes is only using 100,000bytes, 100x lesser memory, for a fairer comparison, use 10mb setting for capacity (but this will not result in many evictions, giving it much much higher hit ratio. do test it to verify claims.
+**
+
 ```
 go test -bench=. -benchmem
 goos: linux
