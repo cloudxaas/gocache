@@ -85,6 +85,11 @@ https://github.com/maypok86/otter
 
 https://github.com/phuslu/lru
 
+https://github.com/hashicorp/golang-lru
+
+https://github.com/elastic/go-freelru
+
+
 
 These benchmarks illustrate the efficiency and speed of the cache, which is designed to operate with zero memory allocations during runtime operations, contributing to its high performance.
 
