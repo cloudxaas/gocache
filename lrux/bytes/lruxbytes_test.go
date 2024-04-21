@@ -207,6 +207,7 @@ func BenchmarkPhusluLRUDelete(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesSet(b *testing.B) {
+    //our limit setting is by memory size capacity, so 10 bytes for key and 1024 bytes for value for 100,000 items)
     cache := NewLRUCache(100000 * (10+1024), 1, FNV1aHash)
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
@@ -215,6 +216,7 @@ func BenchmarkCXLRUBytesSet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesGet(b *testing.B) {
+    //our limit setting is by memory size capacity, so 10 bytes for key and 1024 bytes for value for 100,000 items)
     cache := NewLRUCache(100000 * (10+1024), 1, FNV1aHash)
     for i := 0; i < 100000; i++ {
         cache.Set(bKeys[i], values[i])
@@ -226,6 +228,7 @@ func BenchmarkCXLRUBytesGet(b *testing.B) {
 }
 
 func BenchmarkCXLRUBytesDel(b *testing.B) {
+    //our limit setting is by memory size capacity, so 10 bytes for key and 1024 bytes for value for 100,000 items)
     cache := NewLRUCache(100000 * (10+1024), 1, FNV1aHash)
     for i := 0; i < 100000; i++ {
         cache.Set(bKeys[i], values[i])
