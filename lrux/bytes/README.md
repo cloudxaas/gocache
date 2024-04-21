@@ -59,7 +59,7 @@ BenchmarkHashicorpLRURemove-12              	146819274	         8.295 ns/op	    
 BenchmarkGoFreeLRUSet-12                    	34314114	        30.47 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoFreeLRUGet-12                    	34552854	        35.80 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoFreeLRURemove-12                 	136824891	         8.748 ns/op	       0 B/op	       0 allocs/op
-BenchmarkOtterSet-12                        	 7792684	       149.6 ns/op	      65 B/op	       1 allocs/op
+BenchmarkOtterSet-12*                        	 7792684	       149.6 ns/op	      65 B/op	       1 allocs/op
 BenchmarkOtterGet-12                        	17524428	        67.42 ns/op	       0 B/op	       0 allocs/op
 BenchmarkOtterDelete-12                     	101478790	        11.86 ns/op	       0 B/op	       0 allocs/op
 BenchmarkPhusluLRUSet-12                    	63850137	        19.26 ns/op	       0 B/op	       0 allocs/op
@@ -92,6 +92,7 @@ https://github.com/hashicorp/golang-lru
 https://github.com/elastic/go-freelru
 
 These benchmarks results vary, please adjust parameters to use for your own use case. 
+*otter has 1 byte alloc / op, in these zero alloc benchmark
 
 ## NOTE : AccelruX capacity is set in terms of MEMORY SIZE LIMIT and not NUMBER OF ITEMS LIMIT.
 
