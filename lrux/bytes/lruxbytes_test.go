@@ -2,6 +2,7 @@ package lruxbytes
 
 import (
 	"testing"
+	"fmt"
 
 	cx "github.com/cloudxaas/gocx"
 	"github.com/phuslu/lru"
