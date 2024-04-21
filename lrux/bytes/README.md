@@ -46,7 +46,6 @@ The cache has been rigorously benchmarked on a system with the following specifi
 #### Note : Benchmark results (103,400,000 bytes cache with 10 byte key and 1024 byte value, using full cache without eviction [i think], same goes for the rest):
 **These benchmarks are for reference only, do test it to verify claims. This is using full caching (without eviction for all)**
 
-
 Default mode of running (sharded / non-sharded)
 ```
 go test -bench=. -benchmem -benchtime=5s
@@ -87,7 +86,7 @@ These benchmarks results vary, please adjust parameters to use for your own use 
 *otter has 1 byte alloc / op, in these supposingly zero alloc benchmark cache
 
 ## NOTE : AccelruX capacity is set in terms of MEMORY SIZE LIMIT and not NUMBER OF ITEMS LIMIT.
-
+## The benchmarks to test all case scenario is too wide and varied. Please do your own benchmark on it. There are sharded modes, non-sharded modes etc with different settings designed for different use case. Do your own research and do post comments / suggestions on issue tracker. We respect the purpose of different caches designed for use in different scenarios. Accelru and AccelruX are designed for high performance zero allocation use limited by memory size instead of item capacity limit. 
 ## Usage
 
 To use this cache, check the examples folder included, you can configure your own hash function, use xxh3 if you want faster hashing for larger key values > 24 bytes.
