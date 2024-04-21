@@ -5,7 +5,80 @@ import (
 
 	cx "github.com/cloudxaas/gocx"
 	"github.com/phuslu/lru"
+	"github.com/maypok86/otter"
 )
+
+func BenchmarkOtterSet(b *testing.B) {
+	cache, err := otter.MustBuilder[string, string](1024 * 100).
+		CollectStats().
+		Cost(func(key string, value string) uint32 {
+			return 1
+		}).
+		Build()
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	keys := make([]string, 100000)
+	values := make([]string, 100000)
+	for i := 0; i < 100000; i++ {
+		keys[i] = fmt.Sprintf("key%d", i)
+		values[i] = "value"
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cache.Set(keys[i%100000], values[i%100000])
+	}
+}
+
+func BenchmarkOtterGet(b *testing.B) {
+	cache, err := otter.MustBuilder[string, string](1024 * 100).
+		CollectStats().
+		Cost(func(key string, value string) uint32 {
+			return 1
+		}).
+		Build()
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	for i := 0; i < 100000; i++ {
+		cache.Set(fmt.Sprintf("key%d", i), "value")
+	}
+	keys := make([]string, b.N)
+	for i := 0; i < b.N; i++ {
+		keys[i] = fmt.Sprintf("key%d", i%100000)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = cache.Get(keys[i])
+	}
+}
+
+func BenchmarkOtterDelete(b *testing.B) {
+	cache, err := otter.MustBuilder[string, string](1024 * 100).
+		CollectStats().
+		Cost(func(key string, value string) uint32 {
+			return 1
+		}).
+		Build()
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	keys := make([]string, 100000)
+	for i := 0; i < 100000; i++ {
+		keys[i] = fmt.Sprintf("key%d", i)
+		cache.Set(keys[i], "value")
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cache.Delete(keys[i%100000])
+	}
+}
 
 // FNV-1a hash function for byte slices
 func FNV1aHash(key []byte) uint32 {
