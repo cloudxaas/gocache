@@ -10,7 +10,7 @@
 
 For even faster results (at the expense of lower hit ratio), look at 
 
-https://github.com/cloudxaas/gocache/lrux/bytes
+https://github.com/cloudxaas/gocache/tree/main/lrux/bytes
 
 Welcome to the repository for one of the fastest LRU cache implementations available for Go. This LRU cache is uniquely designed to limit the memory usage directly, rather than by the number of entries. This makes it ideal for applications where the memory footprint is critical, such as in embedded systems or high-performance computing environments where resources are tightly managed.
 
