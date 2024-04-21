@@ -6,7 +6,7 @@
  <h2 align="center">" Let's <u>Acce</u>lerate <u>LRU</u> " - AccelruX</h2>
 </p>
 
-# One of The Fastest Zero Allocation LRU Cache in Golang (for key, value pairs in []byte) - AccelruX (cxlrubytes)
+# One of The Fastest Zero Allocation LRU Cache in Golang (for key, value pairs in []byte) - AccelruX (cxlruxbytes)
 
 # This X version has higher performance, much lower memory use, at the expense of maybe a bit lower hit ratio
 predefine hashing function for hashing keys up to 4 billion keys (can make this to 2^64 if there are requests for it)
