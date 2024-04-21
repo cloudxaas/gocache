@@ -43,43 +43,33 @@ The cache has been rigorously benchmarked on a system with the following specifi
 
 ## NOTE : AccelruX capacity is set in terms of MEMORY SIZE LIMIT and not NUMBER OF ITEMS LIMIT.
 
-#### Note : Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
-**These benchmarks are for reference only, the memory used is far lesser than most of the rest used AND has higher eviction than the rest (only in this benchmark, for production use, please set it more than 100kb cache please), resulting in much lower hit ratio because most of them are using 10000*(1000+8)bytes ~ 10,080,000 bytes when cxlruxbytes is only using 100,000bytes, 100x lesser memory, for a fairer comparison, use 10mb setting for capacity (but this will NOT result in many evictions, giving it much much higher hit ratio. do test it to verify claims.
-**
+#### Note : Benchmark results (103,400,000 bytes cache with 10 byte key and 1024 byte value, using full cache without eviction [i think], same goes for the rest):
+**These benchmarks are for reference only, do test it to verify claims. This is using full caching (without eviction for all)**
 
+Non-sharded mode
 ```
-go test -bench=. -benchmem
+go test -bench=. -benchmem -benchtime=5s
 goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lrux/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkHashicorpLRUSet-12                 	59776335	        18.68 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHashicorpLRUGet-12                 	69722470	        17.15 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHashicorpLRURemove-12              	146819274	         8.295 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoFreeLRUSet-12                    	34314114	        30.47 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoFreeLRUGet-12                    	34552854	        35.80 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoFreeLRURemove-12                 	136824891	         8.748 ns/op	       0 B/op	       0 allocs/op
-BenchmarkOtterSet-12*                        	 7792684	       149.6 ns/op	      65 B/op	       1 allocs/op
-BenchmarkOtterGet-12                        	17524428	        67.42 ns/op	       0 B/op	       0 allocs/op
-BenchmarkOtterDelete-12                     	101478790	        11.86 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUSet-12                    	63850137	        19.26 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUGet-12                    	72362446	        16.78 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPhusluLRUDelete-12                 	130892822	         8.717 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesSet-12                   	77462673	        15.09 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGet-12                   	88257292	        14.09 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDel-12                   	253043168	         4.797 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesSetParallel-12           	22535736	        46.59 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesGetParallel-12           	23807607	        49.34 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesDelParallel-12           	37575604	        30.97 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedSet-12            	60373840	        19.40 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGet-12            	100000000	        12.17 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDel-12            	168262658	         7.127 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedSetParallel-12    	72022780	        18.45 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedGetParallel-12    	68527062	        18.41 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCXLRUBytesShardedDelParallel-12    	185071548	         6.563 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRUSet-12       	129835736	        49.90 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRUGet-12       	139025212	        42.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashicorpLRURemove-12    	707000680	         8.766 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRUSet-12          	159482792	        36.43 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRUGet-12          	174360614	        37.21 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoFreeLRURemove-12       	645199822	         9.103 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOtterSet-12*              	34687963	       170.9 ns/op	      64 B/op	       1 allocs/op
+BenchmarkOtterGet-12              	83873276	        90.43 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOtterDelete-12           	499256071	        12.01 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUSet-12          	304393112	        18.98 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUGet-12          	305822038	        17.61 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUDelete-12       	625983367	         9.895 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSet-12         	359252115	        16.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGet-12         	404628550	        14.81 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDel-12         	1000000000	         4.827 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	github.com/cloudxaas/gocache/lrux/bytes	58.903s
-
+ok  	github.com/cloudxaas/gocache/lrux/bytes	123.636s
 ```
 reference :
 
@@ -93,7 +83,7 @@ https://github.com/elastic/go-freelru
 
 These benchmarks results vary, please adjust parameters to use for your own use case. 
 
-*otter has 1 byte alloc / op, in these zero alloc benchmark
+*otter has 1 byte alloc / op, in these supposingly zero alloc benchmark cache
 
 ## NOTE : AccelruX capacity is set in terms of MEMORY SIZE LIMIT and not NUMBER OF ITEMS LIMIT.
 
