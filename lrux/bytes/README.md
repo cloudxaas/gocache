@@ -46,7 +46,8 @@ The cache has been rigorously benchmarked on a system with the following specifi
 #### Note : Benchmark results (103,400,000 bytes cache with 10 byte key and 1024 byte value, using full cache without eviction [i think], same goes for the rest):
 **These benchmarks are for reference only, do test it to verify claims. This is using full caching (without eviction for all)**
 
-Non-sharded mode
+
+Default mode of running (sharded / non-sharded)
 ```
 go test -bench=. -benchmem -benchtime=5s
 goos: linux
