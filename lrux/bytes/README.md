@@ -13,9 +13,9 @@ predefine hashing function for hashing keys up to 4 billion keys (can make this 
 
 Difference with non-x version:
 
-1. non-x uses map[string]int, x uses map[uint32]uint32 (special thanks and credit to phuslu/lru suggestion)
+1. non-x uses map[string]int, x uses map[uint32]uint32 (special thanks and credit to phuslu/lru suggestion).
 
-2. non-x does not need a hashing mechanism, you need to predefine the hashing mechanism for x version.
+2. non-x does not need a hashing mechanism (so no collision issues), you need to predefine the hashing mechanism for x version.
  
 3. non-x can use up to available memory and will save all keys as much as possible (may have better hit ratio), x version's hit ratio depends on the hash mechanism used, memory can be more efficient but hit ratio may suffer at collision of hash
 
