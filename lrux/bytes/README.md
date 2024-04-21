@@ -40,23 +40,26 @@ goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lrux/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkPhusluLRUSet-12                        43065601                27.89 ns/op            0 B/op          0 allocs/op
-BenchmarkPhusluLRUGet-12                        71053752                17.09 ns/op            0 B/op          0 allocs/op
-BenchmarkPhusluLRUDelete-12                     131928775                9.061 ns/op           0 B/op          0 allocs/op
-BenchmarkCXLRUBytesSet-12                       76250018                15.86 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesGet-12                       83375414                14.05 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesDel-12                       251063827                4.825 ns/op           0 B/op          0 allocs/op
-BenchmarkCXLRUBytesSetParallel-12               28785394                48.20 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesGetParallel-12               26214566                46.60 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesDelParallel-12               34564299                33.40 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedSet-12                52624578                21.94 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedGet-12                89751607                12.56 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedDel-12                166306846                7.186 ns/op           0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedSetParallel-12        65316200                18.20 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedGetParallel-12        59256444                21.89 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedDelParallel-12        175149573                7.826 ns/op           0 B/op          0 allocs/op
+BenchmarkOtterSet-12                        	 7456851	       149.1 ns/op	      65 B/op	       1 allocs/op
+BenchmarkOtterGet-12                        	17926213	        71.64 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOtterDelete-12                     	102627896	        11.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUSet-12                    	66875689	        18.21 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUGet-12                    	59487871	        16.95 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUDelete-12                 	137954754	         8.624 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSet-12                   	68247937	        15.28 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGet-12                   	88466262	        13.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDel-12                   	253530190	         4.740 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSetParallel-12           	28983519	        47.33 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGetParallel-12           	25165668	        50.10 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDelParallel-12           	36730446	        31.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedSet-12            	60919240	        19.63 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGet-12            	100000000	        18.39 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDel-12            	172000660	         7.133 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedSetParallel-12    	89775692	        12.81 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGetParallel-12    	65157898	        18.55 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDelParallel-12    	189985650	         6.418 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok      github.com/cloudxaas/gocache/lrux/bytes 28.996s
+ok  	github.com/cloudxaas/gocache/lrux/bytes	33.491s
 ```
 reference : https://github.com/phuslu/lru
 
