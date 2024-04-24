@@ -78,41 +78,40 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 
 func (c *Cache) Set(key, value []byte) {
 	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	keyStr := cx.B2s(key)
 	memSize := c.estimateMemory(key, value)
 
+	// Evict until there's enough space for the new entry
+	for c.currentMemory+memSize > c.maxMemory && c.tail != -1 {
+		c.evict()
+	}
+
+	// If there's still not enough space after eviction, don't add the new entry
+	if c.currentMemory+memSize > c.maxMemory {
+		return
+	}
+
+	// Add the new entry
 	if idx, ok := c.indexMap[keyStr]; ok {
 		oldMemSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
 		c.adjustMemory(memSize - oldMemSize)
 		c.entries[idx].value = value
 		c.moveToFront(idx)
-		c.mu.Unlock()
-		return
-	}
-
-	// Evict only if necessary
-	if c.currentMemory+memSize > c.maxMemory {
-		for c.currentMemory+memSize > c.maxMemory && c.tail != -1 { // Check if tail is not -1 before trying to evict
-			c.evict()
-		}
-	}
-
-	// Check again if there's space to add new entry after eviction
-	if c.currentMemory+memSize <= c.maxMemory {
+	} else {
 		c.entries = append(c.entries, entry{key: key, value: value, prev: -1, next: -1})
 		idx := len(c.entries) - 1
 		c.indexMap[keyStr] = idx
 		c.adjustMemory(memSize)
 		c.moveToFront(idx)
 
-		if c.head == idx { // If this is the first element or moved to front as first
-			if c.tail == -1 { // If this was the first element added
+		if c.head == idx {
+			if c.tail == -1 {
 				c.tail = idx
 			}
 		}
 	}
-	c.mu.Unlock()
 }
 
 func (c *Cache) moveToFront(idx int) {
