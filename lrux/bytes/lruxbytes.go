@@ -63,30 +63,33 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 
 func (c *Cache) Set(key, value []byte) {
 	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	keyHash := c.hashKey(key)
 	memSize := c.estimateMemory(key, value)
 
+	// Evict until the cache size is within the maximum limit
+	for c.currentMemory+memSize > c.maxMemory {
+		c.evict()
+	}
+
+	// If there's still not enough space after eviction, don't add the new entry
+	if c.currentMemory+memSize > c.maxMemory {
+		return
+	}
+
+	// Add the new entry
 	if idx, ok := c.indexMap[keyHash]; ok {
 		oldMemSize := c.estimateMemory(c.entries[int(idx)].key, c.entries[int(idx)].value)
 		c.adjustMemory(memSize - oldMemSize)
 		c.entries[idx].value = value
 		c.moveToFront(int(idx))
-		c.mu.Unlock()
-		return
-	}
-
-	if c.currentMemory+memSize > c.maxMemory {
-		for c.currentMemory+memSize > c.maxMemory && c.tail != -1 {
-			c.evict()
-		}
-	}
-
-	if c.currentMemory+memSize <= c.maxMemory {
+	} else {
 		c.entries = append(c.entries, entry{key: key, value: value, prev: -1, next: -1})
-		idx := uint32(len(c.entries) - 1) // Cast length to uint32
+		idx := uint32(len(c.entries) - 1)
 		c.indexMap[keyHash] = idx
 		c.adjustMemory(memSize)
-		c.moveToFront(int(idx)) // Cast idx to int for handling
+		c.moveToFront(int(idx))
 
 		if c.head == int(idx) {
 			if c.tail == -1 {
@@ -94,8 +97,8 @@ func (c *Cache) Set(key, value []byte) {
 			}
 		}
 	}
-	c.mu.Unlock()
 }
+
 
 func (c *Cache) Del(key []byte) {
 	c.mu.Lock()
