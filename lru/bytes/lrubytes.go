@@ -78,7 +78,6 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 
 func (c *Cache) Set(key, value []byte) {
 	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	keyStr := cx.B2s(key)
 	memSize := c.estimateMemory(key, value)
@@ -90,6 +89,7 @@ func (c *Cache) Set(key, value []byte) {
 
 	// If there's still not enough space after eviction, don't add the new entry
 	if c.currentMemory+memSize > c.maxMemory {
+		c.mu.Unlock()
 		return
 	}
 
@@ -112,6 +112,7 @@ func (c *Cache) Set(key, value []byte) {
 			}
 		}
 	}
+	c.mu.Unlock()
 }
 
 func (c *Cache) moveToFront(idx int) {
