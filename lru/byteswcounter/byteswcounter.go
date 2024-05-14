@@ -43,7 +43,6 @@ func (c *Cache) adjustMemory(delta int64) {
 
 func (c *Cache) Get(key []byte) ([]byte, bool) {
 	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	keyStr := cx.B2s(key)
 	if idx, ok := c.indexMap[keyStr]; ok {
@@ -52,15 +51,15 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 		}
 		// Increment the counter each time a Get is done
 		c.entries[idx].counter++
+		c.mu.Unlock()
 		return c.entries[idx].value, true
 	}
+	c.mu.Unlock()
 	return nil, false
 }
 
 func (c *Cache) Set(key, value []byte) {
 	c.mu.Lock()
-	defer c.mu.Unlock()
-
 	keyStr := cx.B2s(key)
 	memSize := c.estimateMemory(key, value)
 
@@ -69,6 +68,7 @@ func (c *Cache) Set(key, value []byte) {
 	}
 
 	if c.currentMemory+memSize > c.maxMemory {
+		c.mu.Unlock()
 		return
 	}
 
@@ -90,6 +90,7 @@ func (c *Cache) Set(key, value []byte) {
 			}
 		}
 	}
+	c.mu.Unlock()
 }
 
 func (c *Cache) moveToFront(idx int) {
@@ -116,7 +117,6 @@ func (c *Cache) moveToFront(idx int) {
 
 func (c *Cache) Del(key []byte) {
 	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	keyStr := cx.B2s(key)
 	if idx, ok := c.indexMap[keyStr]; ok {
@@ -124,7 +124,8 @@ func (c *Cache) Del(key []byte) {
 		c.adjustMemory(-memSize)
 		c.detach(idx)
 		delete(c.indexMap, keyStr)
-	}
+	}	
+	c.mu.Unlock()
 }
 
 func (c *Cache) detach(idx int) {
