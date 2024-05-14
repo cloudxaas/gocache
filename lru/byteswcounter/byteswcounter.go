@@ -41,7 +41,7 @@ func (c *Cache) adjustMemory(delta int64) {
 	c.currentMemory += delta
 }
 
-func (c *Cache) Get(key []byte) ([]byte, bool) {
+func (c *Cache) Get(key []byte) ([]byte, uint16, bool) {
 	c.mu.Lock()
 
 	keyStr := cx.B2s(key)
@@ -52,10 +52,10 @@ func (c *Cache) Get(key []byte) ([]byte, bool) {
 		// Increment the counter each time a Get is done
 		c.entries[idx].counter++
 		c.mu.Unlock()
-		return c.entries[idx].value, true
+		return c.entries[idx].value, c.entries[idx].counter, true
 	}
 	c.mu.Unlock()
-	return nil, false
+	return nil, 0, false
 }
 
 func (c *Cache) Set(key, value []byte) {
