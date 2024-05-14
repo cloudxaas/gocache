@@ -41,7 +41,7 @@ func (c *Cache) adjustMemory(delta int64) {
 	c.currentMemory += delta
 }
 
-func (c *Cache) Get(key []byte) ([]byte, uint16, bool) {
+func (c *Cache) Get(key []byte) ([]byte, uint8, bool) {
 	c.mu.Lock()
 
 	keyStr := cx.B2s(key)
