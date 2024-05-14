@@ -1,4 +1,4 @@
-package lrubytes
+package lrubyteswcounter
 
 import (
 	"sync"
