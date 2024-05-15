@@ -50,9 +50,9 @@ func (c *Cache) Get(key []byte, index uint8) ([]byte, uint8, bool) {
 		if idx != c.head {
 			c.moveToFront(idx)
 		}
-		if index != c.index {
-			c.entries[idx].index = 1
-			
+		if index != c.entries[idx].index {
+			c.entries[idx].index = index
+			c.entries[idx].counter = 1
 		}else{
 		// Increment the counter each time a Get is done
 		if c.entries[idx].counter != 255 {
