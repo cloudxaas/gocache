@@ -19,6 +19,7 @@ type Cache struct {
 type entry struct {
 	key, value []byte
 	counter    uint8 // Add a counter to the entry struct
+	index    uint8 // Current index
 	prev, next int
 }
 
@@ -41,7 +42,7 @@ func (c *Cache) adjustMemory(delta int64) {
 	c.currentMemory += delta
 }
 
-func (c *Cache) Get(key []byte) ([]byte, uint8, bool) {
+func (c *Cache) Get(key []byte, index uint8) ([]byte, uint8, bool) {
 	c.mu.Lock()
 
 	keyStr := cx.B2s(key)
@@ -49,15 +50,21 @@ func (c *Cache) Get(key []byte) ([]byte, uint8, bool) {
 		if idx != c.head {
 			c.moveToFront(idx)
 		}
+		if index != c.index {
+			c.entries[idx].index = 1
+			
+		}else{
 		// Increment the counter each time a Get is done
 		if c.entries[idx].counter != 255 {
 			c.entries[idx].counter++
+		}
 		}
 		c.mu.Unlock()
 		return c.entries[idx].value, c.entries[idx].counter, true
 	}
 	c.mu.Unlock()
 	return nil, 0, false
+	
 }
 
 func (c *Cache) Set(key, value []byte) {
