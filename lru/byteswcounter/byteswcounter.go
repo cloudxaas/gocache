@@ -50,7 +50,9 @@ func (c *Cache) Get(key []byte) ([]byte, uint8, bool) {
 			c.moveToFront(idx)
 		}
 		// Increment the counter each time a Get is done
-		c.entries[idx].counter++
+		if c.entries[idx].counter != 255 {
+			c.entries[idx].counter++
+		}
 		c.mu.Unlock()
 		return c.entries[idx].value, c.entries[idx].counter, true
 	}
