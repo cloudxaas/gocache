@@ -68,7 +68,7 @@ func (c *Cache) adjustMemory(delta int64) {
     c.currentMemory += delta
 }
 
-func (c *Cache) Get(key []byte, index uint8) ([]byte, uint8, bool) {
+func (c *Cache) Get(key []byte, index uint8) ([]byte, bool) {
     c.mu.Lock()
     defer c.mu.Unlock()
 
@@ -82,9 +82,9 @@ func (c *Cache) Get(key []byte, index uint8) ([]byte, uint8, bool) {
             entry.index = index
         }
         c.entries[idx] = entry
-        return entry.value, entry.index, true
+        return entry.value, true
     }
-    return nil, 0, false
+    return nil, false
 }
 
 func (c *Cache) moveToFront(idx uint64) {
