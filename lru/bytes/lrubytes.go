@@ -68,7 +68,7 @@ func (c *Cache) adjustMemory(delta int64) {
     c.currentMemory += delta
 }
 
-func (c *Cache) Get(key []byte, index uint8) ([]byte, bool) {
+func (c *Cache) Get(key []byte) ([]byte, bool) {
     c.mu.Lock()
     defer c.mu.Unlock()
 
@@ -78,10 +78,6 @@ func (c *Cache) Get(key []byte, index uint8) ([]byte, bool) {
             c.moveToFront(idx)
         }
         entry := c.entries[idx]
-        if index != entry.index {
-            entry.index = index
-        }
-        c.entries[idx] = entry
         return entry.value, true
     }
     return nil, false
@@ -241,3 +237,4 @@ func (c *Cache) Del(key []byte) {
         delete(c.indexMap, keyStr)
     }
 }
+
