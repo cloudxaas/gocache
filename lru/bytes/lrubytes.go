@@ -22,176 +22,222 @@
 package lrubytes
 
 import (
-	"sync"
+    "sync"
 
-	cx "github.com/cloudxaas/gocx"
+    cx "github.com/cloudxaas/gocx"
 )
 
 type Cache struct {
-	maxMemory      int64
-	currentMemory  int64
-	evictBatchSize int // Store the number of items to evict at once
-	entries        []entry
-	indexMap       map[string]int
-	head, tail     int
-	mu             sync.Mutex
+    maxMemory      int64
+    currentMemory  int64
+    evictBatchSize int
+    entries        map[uint64]entry
+    indexMap       map[string]uint64
+    head, tail     uint64
+    mu             sync.Mutex
+    indexCounter   uint64
 }
 
 type entry struct {
-	key, value []byte
-	prev, next int
+    key, value []byte
+    index      uint8
+    prev, next uint64
 }
 
-// NewLRUCache now accepts an additional parameter for batch eviction size
+const (
+    InvalidIndex = ^uint64(0) // Max value for uint64 to represent an invalid index
+)
+
 func NewLRUCache(maxMemory int64, evictBatchSize int) *Cache {
-	return &Cache{
-		maxMemory:      maxMemory,
-		evictBatchSize: evictBatchSize, // Initialize evictBatchSize
-		entries:        make([]entry, 0),
-		indexMap:       make(map[string]int),
-		head:           -1,
-		tail:           -1,
-	}
+    return &Cache{
+        maxMemory:      maxMemory,
+        evictBatchSize: evictBatchSize,
+        entries:        make(map[uint64]entry),
+        indexMap:       make(map[string]uint64),
+        head:           InvalidIndex,
+        tail:           InvalidIndex,
+        indexCounter:   0,
+    }
 }
 
 func (c *Cache) estimateMemory(key, value []byte) int64 {
-	return int64(len(key) + len(value))
+    return int64(len(key) + len(value) + 10) // Adding constant overhead for index
 }
 
 func (c *Cache) adjustMemory(delta int64) {
-	c.currentMemory += delta
+    c.currentMemory += delta
 }
 
-func (c *Cache) Get(key []byte) ([]byte, bool) {
-	c.mu.Lock()
-	keyStr := cx.B2s(key)
-	if idx, ok := c.indexMap[keyStr]; ok {
-		if idx != c.head {
-			c.moveToFront(idx)
-		}
-		c.mu.Unlock()
-		return c.entries[idx].value, true
-	}
-	c.mu.Unlock()
-	return nil, false
+func (c *Cache) Get(key []byte, index uint8) ([]byte, uint8, bool) {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+
+    keyStr := cx.B2s(key)
+    if idx, ok := c.indexMap[keyStr]; ok {
+        if idx != c.head {
+            c.moveToFront(idx)
+        }
+        entry := c.entries[idx]
+        if index != entry.index {
+            entry.index = index
+        }
+        c.entries[idx] = entry
+        return entry.value, entry.index, true
+    }
+    return nil, 0, false
 }
 
-func (c *Cache) Set(key, value []byte) {
-	c.mu.Lock()
+func (c *Cache) moveToFront(idx uint64) {
+    if idx == InvalidIndex {
+        return
+    }
 
-	keyStr := cx.B2s(key)
-	memSize := c.estimateMemory(key, value)
+    if idx == c.head {
+        return
+    }
 
-	// Evict until there's enough space for the new entry
-	for c.currentMemory+memSize > c.maxMemory && c.tail != -1 {
-		c.evict()
-	}
+    entry := c.entries[idx]
+    c.detach(idx)
 
-	// If there's still not enough space after eviction, don't add the new entry
-	if c.currentMemory+memSize > c.maxMemory {
-		c.mu.Unlock()
-		return
-	}
+    entry.prev = InvalidIndex
+    entry.next = c.head
+    if c.head != InvalidIndex {
+        headEntry := c.entries[c.head]
+        headEntry.prev = idx
+        c.entries[c.head] = headEntry
+    }
+    c.head = idx
+    c.entries[idx] = entry
 
-	// Add the new entry
-	if idx, ok := c.indexMap[keyStr]; ok {
-		oldMemSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
-		c.adjustMemory(memSize - oldMemSize)
-		c.entries[idx].value = value
-		c.moveToFront(idx)
-	} else {
-		c.entries = append(c.entries, entry{key: key, value: value, prev: -1, next: -1})
-		idx := len(c.entries) - 1
-		c.indexMap[keyStr] = idx
-		c.adjustMemory(memSize)
-		c.moveToFront(idx)
-
-		if c.head == idx {
-			if c.tail == -1 {
-				c.tail = idx
-			}
-		}
-	}
-	c.mu.Unlock()
+    if c.tail == InvalidIndex {
+        c.tail = idx
+    }
 }
 
-func (c *Cache) moveToFront(idx int) {
-	if idx == c.head {
-		return // It's already the head, nothing to do
-	}
-	c.detach(idx) // Detach from current position
+func (c *Cache) detach(idx uint64) {
+    if idx == InvalidIndex {
+        return
+    }
 
-	// Set the previous head
-	if c.head != -1 {
-		c.entries[c.head].prev = idx
-	}
-	c.entries[idx].next = c.head
-	c.entries[idx].prev = -1
-	c.head = idx
+    entry := c.entries[idx]
+    if entry.prev != InvalidIndex {
+        prevEntry := c.entries[entry.prev]
+        prevEntry.next = entry.next
+        c.entries[entry.prev] = prevEntry
+    } else {
+        c.head = entry.next
+    }
 
-	// If there was no head before, this is also the tail
-	if c.tail == -1 {
-		c.tail = idx
-	}
+    if entry.next != InvalidIndex {
+        nextEntry := c.entries[entry.next]
+        nextEntry.prev = entry.prev
+        c.entries[entry.next] = nextEntry
+    } else {
+        c.tail = entry.prev
+    }
 
-	// If moving the last node to the front, update tail if needed
-	if c.tail == idx {
-		c.tail = c.entries[idx].prev // Update the tail if the moved node was the tail
-	}
+    entry.prev = InvalidIndex
+    entry.next = InvalidIndex
+    c.entries[idx] = entry
+}
+
+func (c *Cache) evict(entrySize int64) {
+    evicted := false
+    attempts := 0
+
+    for c.currentMemory+entrySize > c.maxMemory && c.tail != InvalidIndex {
+        tailIdx := c.tail
+
+        if tailIdx == InvalidIndex {
+            break
+        }
+
+        oldKeyStr := cx.B2s(c.entries[tailIdx].key)
+        memSize := c.estimateMemory(c.entries[tailIdx].key, c.entries[tailIdx].value)
+        c.adjustMemory(-memSize)
+
+        c.detach(tailIdx)
+
+        delete(c.indexMap, oldKeyStr)
+        delete(c.entries, tailIdx)
+        evicted = true
+        attempts++
+
+        if attempts > len(c.entries) {
+            break
+        }
+    }
+
+    if !evicted {
+        return
+    }
+}
+
+func (c *Cache) wrapIndexCounter() {
+    if c.indexCounter == InvalidIndex {
+        c.indexCounter = 0
+    }
+}
+
+func (c *Cache) Set(key, value []byte) error {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+
+    keyStr := cx.B2s(key)
+    memSize := c.estimateMemory(key, value)
+
+    c.wrapIndexCounter()
+
+    for c.currentMemory+memSize > c.maxMemory && c.tail != InvalidIndex {
+        c.evict(memSize)
+    }
+
+    if c.currentMemory+memSize > c.maxMemory {
+        return nil
+    }
+
+    if idx, ok := c.indexMap[keyStr]; ok {
+        entry := c.entries[idx]
+        entry.value = value
+        c.entries[idx] = entry
+        c.moveToFront(idx)
+    } else {
+        entry := entry{key: key, value: value, index: 0, prev: InvalidIndex, next: c.head}
+        c.entries[c.indexCounter] = entry
+        c.indexMap[keyStr] = c.indexCounter
+
+        if c.head != InvalidIndex {
+            headEntry := c.entries[c.head]
+            headEntry.prev = c.indexCounter
+            c.entries[c.head] = headEntry
+        }
+        c.head = c.indexCounter
+
+        if c.tail == InvalidIndex {
+            c.tail = c.indexCounter
+        }
+
+        c.indexCounter++
+    }
+
+    c.adjustMemory(memSize)
+    return nil
 }
 
 func (c *Cache) Del(key []byte) {
-	c.mu.Lock()
-	keyStr := cx.B2s(key)
-	if idx, ok := c.indexMap[keyStr]; ok {
-		memSize := c.estimateMemory(c.entries[idx].key, c.entries[idx].value)
-		c.adjustMemory(-memSize)
-		c.detach(idx)
-		delete(c.indexMap, keyStr)
-	}
-	c.mu.Unlock()
-}
+    c.mu.Lock()
+    defer c.mu.Unlock()
 
-func (c *Cache) detach(idx int) {
-	// Handle previous link
-	if c.entries[idx].prev != -1 {
-		c.entries[c.entries[idx].prev].next = c.entries[idx].next
-	} else {
-		// When removing the head, move the head pointer forward
-		c.head = c.entries[idx].next
-	}
+    keyStr := cx.B2s(key)
+    if idx, ok := c.indexMap[keyStr]; ok {
+        entry := c.entries[idx]
 
-	// Handle next link
-	if c.entries[idx].next != -1 {
-		c.entries[c.entries[idx].next].prev = c.entries[idx].prev
-	} else {
-		// When removing the tail, move the tail pointer backward
-		c.tail = c.entries[idx].prev
-	}
+        memSize := c.estimateMemory(entry.key, entry.value)
+        c.adjustMemory(-memSize)
 
-	// Reset the node's links
-	c.entries[idx].prev = -1
-	c.entries[idx].next = -1
+        c.detach(idx)
 
-	// Additional check: if the cache is now empty, reset head and tail
-	if c.head == -1 {
-		c.tail = -1 // Ensures that the tail is also reset when all items are evicted
-	}
-}
-
-func (c *Cache) evict() {
-	for i := 0; i < c.evictBatchSize && c.tail != -1; i++ {
-		oldKeyStr := cx.B2s(c.entries[c.tail].key)
-		memSize := c.estimateMemory(c.entries[c.tail].key, c.entries[c.tail].value)
-		c.adjustMemory(-memSize)
-		c.detach(c.tail)
-
-		if c.tail != -1 { // Verify tail is valid before proceeding
-			delete(c.indexMap, oldKeyStr)
-		}
-
-		if c.tail == -1 { // Break if no more items to evict
-			break
-		}
-	}
+        delete(c.entries, idx)
+        delete(c.indexMap, keyStr)
+    }
 }
