@@ -23,6 +23,7 @@ package lrubytes
 
 import (
     "sync"
+    "sync/atomic"
 
     cx "github.com/cloudxaas/gocx"
 )
@@ -34,7 +35,7 @@ type Cache struct {
     entries        map[uint64]entry
     indexMap       map[string]uint64
     head, tail     uint64
-    mu             sync.Mutex
+    mu             sync.RWMutex
     indexCounter   uint64
 }
 
@@ -65,30 +66,37 @@ func (c *Cache) estimateMemory(key, value []byte) int64 {
 }
 
 func (c *Cache) adjustMemory(delta int64) {
-    c.currentMemory += delta
+    atomic.AddInt64(&c.currentMemory, delta)
 }
 
 func (c *Cache) Get(key []byte) ([]byte, bool) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-
     keyStr := cx.B2s(key)
-    if idx, ok := c.indexMap[keyStr]; ok {
-        if idx != c.head {
-            c.moveToFront(idx)
-        }
-        entry := c.entries[idx]
-        return entry.value, true
+    
+    c.mu.RLock()
+    idx, ok := c.indexMap[keyStr]
+    if !ok {
+        c.mu.RUnlock()
+        return nil, false
     }
-    return nil, false
+
+    if idx != c.head {
+        c.mu.RUnlock()
+        c.mu.Lock()
+        c.moveToFront(idx)
+        c.mu.Unlock()
+    } else {
+        c.mu.RUnlock()
+    }
+    
+    c.mu.RLock()
+    entry := c.entries[idx]
+    c.mu.RUnlock()
+    
+    return entry.value, true
 }
 
 func (c *Cache) moveToFront(idx uint64) {
-    if idx == InvalidIndex {
-        return
-    }
-
-    if idx == c.head {
+    if idx == InvalidIndex || idx == c.head {
         return
     }
 
@@ -141,7 +149,7 @@ func (c *Cache) evict(entrySize int64) {
     evicted := false
     attempts := 0
 
-    for c.currentMemory+entrySize > c.maxMemory && c.tail != InvalidIndex {
+    for atomic.LoadInt64(&c.currentMemory)+entrySize > c.maxMemory && c.tail != InvalidIndex {
         tailIdx := c.tail
 
         if tailIdx == InvalidIndex {
@@ -176,19 +184,19 @@ func (c *Cache) wrapIndexCounter() {
 }
 
 func (c *Cache) Set(key, value []byte) error {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-
     keyStr := cx.B2s(key)
     memSize := c.estimateMemory(key, value)
 
     c.wrapIndexCounter()
 
-    for c.currentMemory+memSize > c.maxMemory && c.tail != InvalidIndex {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+
+    for atomic.LoadInt64(&c.currentMemory)+memSize > c.maxMemory && c.tail != InvalidIndex {
         c.evict(memSize)
     }
 
-    if c.currentMemory+memSize > c.maxMemory {
+    if atomic.LoadInt64(&c.currentMemory)+memSize > c.maxMemory {
         return nil
     }
 
@@ -221,10 +229,10 @@ func (c *Cache) Set(key, value []byte) error {
 }
 
 func (c *Cache) Del(key []byte) {
+    keyStr := cx.B2s(key)
     c.mu.Lock()
     defer c.mu.Unlock()
 
-    keyStr := cx.B2s(key)
     if idx, ok := c.indexMap[keyStr]; ok {
         entry := c.entries[idx]
 
@@ -237,4 +245,5 @@ func (c *Cache) Del(key []byte) {
         delete(c.indexMap, keyStr)
     }
 }
+
 
