@@ -36,28 +36,28 @@ The cache has been rigorously benchmarked on a system with the following specifi
 
 Benchmark results (100kb cache with 1024b key and value to force 1 item eviction here, can set batch eviction higher at your own discretion):
 ```
-o test -bench=. -benchmem
+go test -bench=. -benchmem
 goos: linux
 goarch: amd64
 pkg: github.com/cloudxaas/gocache/lru/bytes
 cpu: AMD Ryzen 5 7640HS w/ Radeon 760M Graphics     
-BenchmarkPhusluLRUSet-12                        63946095                18.39 ns/op            0 B/op          0 allocs/op
-BenchmarkPhusluLRUGet-12                        69792022                16.35 ns/op            0 B/op          0 allocs/op
-BenchmarkPhusluLRUDelete-12                     138902715                8.764 ns/op           0 B/op          0 allocs/op
-BenchmarkCXLRUBytesSet-12                       73397277                16.04 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesGet-12                       81011492                14.44 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesDel-12                       296433568                4.013 ns/op           0 B/op          0 allocs/op
-BenchmarkCXLRUBytesSetParallel-12               24877929                47.55 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesGetParallel-12               26370724                44.51 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesDelParallel-12               42026001                28.40 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedSet-12                51489772                23.30 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedGet-12                54076873                21.26 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedDel-12                156185623                7.844 ns/op           0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedSetParallel-12        60227346                22.03 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedGetParallel-12        52058894                22.67 ns/op            0 B/op          0 allocs/op
-BenchmarkCXLRUBytesShardedDelParallel-12        208552095                5.342 ns/op           0 B/op          0 allocs/op
+BenchmarkPhusluLRUSet-12                    	65841424	        18.15 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUGet-12                    	74677370	        17.14 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPhusluLRUDelete-12                 	126121248	         9.027 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSet-12                   	 4266291	       273.8 ns/op	      29 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGet-12                   	29549041	        41.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDel-12                   	142277222	         8.058 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesSetParallel-12           	10908870	       111.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesGetParallel-12           	17698117	        73.32 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesDelParallel-12           	31645322	        37.71 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedSet-12            	 9271803	       128.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGet-12            	26630196	        42.43 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDel-12            	96369843	        12.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedSetParallel-12    	24498133	        52.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedGetParallel-12    	19658251	        58.56 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCXLRUBytesShardedDelParallel-12    	91055095	        11.54 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok      github.com/cloudxaas/gocache/lru/bytes  26.591s
+ok  	github.com/cloudxaas/gocache/lru/bytes	25.601s
 ```
 reference : https://github.com/phuslu/lru
 
