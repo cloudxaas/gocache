@@ -1,7 +1,6 @@
 package circularbuffer
 
 import (
-	"sync"
 	"testing"
 )
 
